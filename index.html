@@ -1,15 +1,17 @@
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meu Player PRO</title>
+<title>PLAYER PRO SIMPLES</title>
+
 <style>
 body {
     margin: 0;
-    background: linear-gradient(270deg, #0f0f0f, #1a1a1a, #000000);
-    background-size: 600% 600%;
-    animation: bg 10s ease infinite;
     font-family: Arial, sans-serif;
+    background: linear-gradient(270deg, #000, #111, #1a1a1a);
+    background-size: 600% 600%;
+    animation: bg 12s ease infinite;
     color: white;
     text-align: center;
 }
@@ -20,20 +22,13 @@ body {
     100% {background-position:0% 50%;}
 }
 
-h1 {
-    margin-top: 20px;
-}
-
-.search-box {
-    margin: 20px;
-}
+h1 { margin: 20px; }
 
 input {
-    padding: 12px;
     width: 70%;
+    padding: 12px;
     border-radius: 10px;
     border: none;
-    outline: none;
     font-size: 16px;
 }
 
@@ -45,102 +40,46 @@ button {
     color: white;
     font-weight: bold;
     cursor: pointer;
-    margin-left: 10px;
 }
 
 iframe {
-    margin-top: 20px;
     width: 90%;
     height: 400px;
-    border-radius: 15px;
     border: none;
-}
-
-.videos {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding: 15px;
-}
-
-.card {
-    min-width: 200px;
-    cursor: pointer;
-}
-
-.card img {
-    width: 100%;
-    border-radius: 10px;
-}
-
-.card p {
-    font-size: 14px;
+    border-radius: 15px;
+    margin-top: 20px;
 }
 </style>
 </head>
+
 <body>
-<h1>🎬 Player PRO</h1>
-<div class="search-box">
-<input type="text" id="search" placeholder="Cole link do YouTube ou nome...">
-<button onclick="buscar()">Buscar</button>
-</div>
-<iframe id="player" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
-<div class="videos" id="lista"></div>
+
+<h1>🔥 PLAYER PRO SIMPLES</h1>
+
+<input id="link" placeholder="Cole link do YouTube">
+<button onclick="tocar()">Tocar</button>
+
+<iframe id="player" src="" allowfullscreen></iframe>
+
 <script>
 function getVideoId(url) {
-    let regExp = /(?:youtube\\.com\\/watch\\?v=|youtu\\.be\\/)([^&]+)/;
+    let regExp = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
     let match = url.match(regExp);
     return match ? match[1] : null;
 }
 
-function buscar() {
-    let valor = document.getElementById("search").value;
-
-    // Se for link direto
-    let id = getVideoId(valor);
+function tocar() {
+    let url = document.getElementById("link").value;
+    let id = getVideoId(url);
 
     if (id) {
         document.getElementById("player").src =
-            "https://www.youtube.com/embed/" + id;
-        return;
+        "https://www.youtube.com/embed/" + id;
+    } else {
+        alert("Link inválido!");
     }
-
-    // Se for texto (busca simulada)
-    buscarVideos(valor);
-}
-
-function buscarVideos(query) {
-    let lista = document.getElementById("lista");
-    lista.innerHTML = "";
-
-    // vídeos de exemplo (simulação leve pra funcionar offline)
-    let videos = [
-        {id:"kJQP7kiw5Fk", titulo:"Despacito"},
-        {id:"3JZ_D3ELwOQ", titulo:"Mark Ronson - Uptown Funk"},
-        {id:"L_jWHffIx5E", titulo:"Smells Like Teen Spirit"},
-        {id:"fJ9rUzIMcZQ", titulo:"Bohemian Rhapsody"}
-    ];
-
-    videos.forEach(v => {
-        if (v.titulo.toLowerCase().includes(query.toLowerCase())) {
-            let card = document.createElement("div");
-            card.className = "card";
-
-            card.innerHTML = `
-                <img src="https://img.youtube.com/vi/${v.id}/0.jpg">
-                <p>${v.titulo}</p>
-            `;
-
-            card.onclick = () => {
-                document.getElementById("player").src =
-                "https://www.youtube.com/embed/" + v.id;
-            };
-
-            lista.appendChild(card);
-        }
-    });
 }
 </script>
+
 </body>
 </html>
-:::
