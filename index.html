@@ -1,175 +1,146 @@
-<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>YouTube Premium - Bibiu Galdino</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --fundo: #0f0f0f;
-            --texto: #f1f1f1;
-            --cinza: #aaa;
-            --detalhe: #ff0000;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu Player PRO</title>
+<style>
+body {
+    margin: 0;
+    background: linear-gradient(270deg, #0f0f0f, #1a1a1a, #000000);
+    background-size: 600% 600%;
+    animation: bg 10s ease infinite;
+    font-family: Arial, sans-serif;
+    color: white;
+    text-align: center;
+}
 
-        body {
-            background-color: var(--fundo);
-            color: var(--texto);
-            margin: 0;
-            font-family: 'Roboto', sans-serif;
-            padding-bottom: 70px;
-            overflow-x: hidden;
-        }
+@keyframes bg {
+    0% {background-position:0% 50%;}
+    50% {background-position:100% 50%;}
+    100% {background-position:0% 50%;}
+}
 
-        /* HEADER ESTILO APP */
-        .header {
-            position: sticky;
-            top: 0;
-            background: var(--fundo);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 16px;
-            z-index: 100;
-        }
+h1 {
+    margin-top: 20px;
+}
 
-        .logo { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 19px; letter-spacing: -1px; }
-        .logo-icon { color: var(--detalhe); font-size: 24px; }
+.search-box {
+    margin: 20px;
+}
 
-        /* LISTA DE VÍDEOS */
-        .video-card { width: 100%; margin-bottom: 12px; cursor: pointer; }
-        .thumbnail { width: 100%; aspect-ratio: 16/9; background: #222; position: relative; }
-        .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-        .duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 500; }
-        
-        .details { display: flex; padding: 12px; gap: 12px; }
-        .avatar { width: 36px; height: 36px; background: #5a3ab6; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; }
-        .info h3 { margin: 0; font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .meta { color: var(--cinza); font-size: 12px; margin-top: 4px; }
+input {
+    padding: 12px;
+    width: 70%;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+}
 
-        /* PLAYER PREMIUM (TELA CHEIA) */
-        .player-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: none; flex-direction: column; z-index: 2000;
-        }
-        .player-overlay.active { display: flex; }
-        .close-bar { 
-            padding: 15px; 
-            background: #111; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px;
-            font-weight: 500;
-            cursor: pointer;
-        }
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    background: red;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 10px;
+}
 
-        #iframe-container { flex-grow: 1; display: flex; align-items: center; background: #000; }
-        iframe { width: 100%; aspect-ratio: 16/9; border: none; box-shadow: 0 0 50px rgba(255,0,0,0.1); }
+iframe {
+    margin-top: 20px;
+    width: 90%;
+    height: 400px;
+    border-radius: 15px;
+    border: none;
+}
 
-        /* NAV BAR */
-        .nav-bar {
-            position: fixed; bottom: 0; width: 100%; height: 60px;
-            background: var(--fundo); border-top: 1px solid #282828;
-            display: flex; justify-content: space-around; align-items: center; z-index: 100;
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--cinza); text-decoration: none; gap: 4px; }
-        .nav-item.active { color: white; }
-        .add-icon { font-size: 32px; font-weight: 300; }
+.videos {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 15px;
+}
 
-    </style>
+.card {
+    min-width: 200px;
+    cursor: pointer;
+}
+
+.card img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.card p {
+    font-size: 14px;
+}
+</style>
 </head>
 <body>
+<h1>🎬 Player PRO</h1>
+<div class="search-box">
+<input type="text" id="search" placeholder="Cole link do YouTube ou nome...">
+<button onclick="buscar()">Buscar</button>
+</div>
+<iframe id="player" src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
+<div class="videos" id="lista"></div>
+<script>
+function getVideoId(url) {
+    let regExp = /(?:youtube\\.com\\/watch\\?v=|youtu\\.be\\/)([^&]+)/;
+    let match = url.match(regExp);
+    return match ? match[1] : null;
+}
 
-    <header class="header">
-        <div class="logo"><span class="logo-icon">▶</span> Premium</div>
-        <div style="display: flex; gap: 20px; align-items: center;">
-            <span style="font-size: 20px;">📺</span>
-            <span style="font-size: 20px;">🔔</span>
-            <span style="font-size: 20px;">🔍</span>
-            <div class="avatar" style="width: 28px; height: 28px; background: #004d40;">B</div>
-        </div>
-    </header>
+function buscar() {
+    let valor = document.getElementById("search").value;
 
-    <main id="video-list"></main>
+    // Se for link direto
+    let id = getVideoId(valor);
 
-    <div class="player-overlay" id="player">
-        <div class="close-bar" onclick="closeVideo()">
-            <span>✕</span> Fechar vídeo (Modo Premium)
-        </div>
-        <div id="iframe-container"></div>
-        <div style="padding: 20px; color: #aaa; font-size: 13px;">
-            <h3 id="playing-title" style="color: white; margin-bottom: 8px;"></h3>
-            Rodando via servidor seguro sem rastreamento.
-        </div>
-    </div>
+    if (id) {
+        document.getElementById("player").src =
+            "https://www.youtube.com/embed/" + id;
+        return;
+    }
 
-    <nav class="nav-bar">
-        <a href="#" class="nav-item active">🏠<span>Início</span></a>
-        <a href="#" class="nav-item">⚡<span>Shorts</span></a>
-        <div class="add-icon">⊕</div>
-        <a href="#" class="nav-item">📺<span>Inscrições</span></a>
-        <a href="#" class="nav-item">📚<span>Biblioteca</span></a>
-    </nav>
+    // Se for texto (busca simulada)
+    buscarVideos(valor);
+}
 
-    <script>
-        // Use os IDs dos seus vídeos favoritos aqui
-        const videos = [
-            { id: "5U7bE06_z7I", title: "O Melhor do Piseiro e Sanfona 2026 - Especial Bibiu Galdino", views: "1.2M", time: "3 dias", channel: "Canal Oficial" },
-            { id: "4YmXW7XF66o", title: "Projeto Tela de Login com HTML e CSS - DevClub", views: "128k", time: "1 ano", channel: "DevClub" },
-            { id: "jfKfPfyJRdk", title: "Natureza em 8K - Ultra HD Cinematic para Bibiu", views: "5.4M", time: "2 semanas", channel: "Mundo Natureza" },
-            { id: "dQw4w9WgXcQ", title: "Rick Astley - Never Gonna Give You Up (4K Remaster)", views: "1.5B", time: "há muito tempo", channel: "Rick Astley" }
-        ];
+function buscarVideos(query) {
+    let lista = document.getElementById("lista");
+    lista.innerHTML = "";
 
-        const container = document.getElementById('video-list');
+    // vídeos de exemplo (simulação leve pra funcionar offline)
+    let videos = [
+        {id:"kJQP7kiw5Fk", titulo:"Despacito"},
+        {id:"3JZ_D3ELwOQ", titulo:"Mark Ronson - Uptown Funk"},
+        {id:"L_jWHffIx5E", titulo:"Smells Like Teen Spirit"},
+        {id:"fJ9rUzIMcZQ", titulo:"Bohemian Rhapsody"}
+    ];
 
-        function renderVideos() {
-            videos.forEach(v => {
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.onclick = () => openVideo(v.id, v.title);
-                card.innerHTML = `
-                    <div class="thumbnail">
-                        <img src="https://img.youtube.com/vi/${v.id}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${v.id}/0.jpg'">
-                        <span class="duration">10:00</span>
-                    </div>
-                    <div class="details">
-                        <div class="avatar">B</div>
-                        <div class="info">
-                            <h3>${v.title}</h3>
-                            <div class="meta">${v.channel} • ${v.views} visualizações • há ${v.time}</div>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+    videos.forEach(v => {
+        if (v.titulo.toLowerCase().includes(query.toLowerCase())) {
+            let card = document.createElement("div");
+            card.className = "card";
+
+            card.innerHTML = `
+                <img src="https://img.youtube.com/vi/${v.id}/0.jpg">
+                <p>${v.titulo}</p>
+            `;
+
+            card.onclick = () => {
+                document.getElementById("player").src =
+                "https://www.youtube.com/embed/" + v.id;
+            };
+
+            lista.appendChild(card);
         }
-
-        function openVideo(id, title) {
-            const player = document.getElementById('player');
-            const iframeCon = document.getElementById('iframe-container');
-            document.getElementById('playing-title').innerText = title;
-            
-            player.classList.add('active');
-            
-            // A MÁGICA: youtube-nocookie + parâmetros de privacidade
-            iframeCon.innerHTML = `<iframe 
-                src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&showinfo=0" 
-                allow="autoplay; encrypted-media" 
-                allowfullscreen>
-            </iframe>`;
-            
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeVideo() {
-            const player = document.getElementById('player');
-            document.getElementById('iframe-container').innerHTML = '';
-            player.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        renderVideos();
-    </script>
+    });
+}
+</script>
 </body>
 </html>
+:::
