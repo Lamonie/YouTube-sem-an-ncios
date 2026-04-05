@@ -3,305 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>YouTube Premium Clone</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>YouTube Premium - Bibiu Galdino</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        /* 1. RESET E CONFIGURAÇÕES GLOBAIS */
         :root {
             --cor-fundo: #0f0f0f;
-            --cor-fundo-secundaria: #212121;
-            --cor-superficie: #282828;
-            --cor-borda: #3d3d3d;
-            --cor-texto-primaria: #f1f1f1;
-            --cor-texto-secundaria: #aaa;
-            --cor-destaque: #ff0000;
-            --cor-icone: #f1f1f1;
-            --bottom-nav-height: 60px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Roboto', sans-serif;
-            -webkit-tap-highlight-color: transparent;
+            --cor-texto: #f1f1f1;
+            --cor-cinza: #aaa;
+            --cor-premium: #ff0000;
         }
 
         body {
             background-color: var(--cor-fundo);
-            color: var(--cor-texto-primaria);
-            padding-bottom: var(--bottom-nav-height);
+            color: var(--cor-texto);
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            padding-bottom: 70px;
         }
-        
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--cor-borda); border-radius: 3px; }
 
-        /* 2. HEADER (BARRA SUPERIOR) */
+        /* HEADER */
         .header {
             position: sticky;
             top: 0;
-            width: 100%;
-            height: 56px;
-            background-color: var(--cor-fundo);
+            background: var(--cor-fundo);
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 0 16px;
-            z-index: 1000;
-        }
-
-        .header-left, .header-right {
-            display: flex;
             align-items: center;
-            gap: 16px;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--cor-texto-primaria);
-            gap: 4px;
+            padding: 10px 16px;
+            z-index: 100;
         }
 
-        .logo svg { width: 32px; height: 22px; }
-        .logo span { font-size: 18px; font-weight: bold; letter-spacing: -1px; }
-        
-        .header-icon {
-            color: var(--cor-icone);
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: #5a3ab6;
-            cursor: pointer;
-        }
-        
-        .icon-svg { fill: currentColor; }
+        .logo { display: flex; align-items: center; gap: 5px; font-weight: bold; font-size: 18px; }
+        .logo-icon { color: var(--cor-premium); font-size: 24px; }
 
-        /* 3. CONTEÚDO PRINCIPAL */
-        .main-content { padding: 0; }
-        .content-section { padding: 16px 0; border-bottom: 4px solid var(--cor-fundo-secundaria); }
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 20px;
-            font-weight: 500;
-            padding: 0 16px 12px 16px;
-        }
+        /* VÍDEOS */
+        .video-card { width: 100%; margin-bottom: 20px; cursor: pointer; }
+        .thumbnail { width: 100%; aspect-ratio: 16/9; background: #222; position: relative; }
+        .thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+        .duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); padding: 2px 5px; border-radius: 4px; font-size: 12px; }
         
-        /* 3.1. CARD DE VÍDEO PADRÃO */
-        .video-card { cursor: pointer; display: flex; flex-direction: column; padding: 0 16px 24px 16px; }
-        .thumbnail-container {
-            position: relative;
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            border-radius: 12px;
-            overflow: hidden;
-            background-color: var(--cor-superficie);
-        }
-        .thumbnail-container img { width: 100%; height: 100%; object-fit: cover; }
-        .video-duration {
-            position: absolute; bottom: 8px; right: 8px;
-            background-color: rgba(0, 0, 0, 0.8); color: var(--cor-texto-primaria);
-            border-radius: 4px; padding: 2px 6px; font-size: 12px; font-weight: 500;
-        }
-        .video-details { display: flex; gap: 12px; padding-top: 12px; }
-        .channel-avatar {
-            width: 36px; height: 36px; border-radius: 50%;
-            background-color: var(--cor-texto-secundaria); flex-shrink: 0;
-        }
-        .video-info { display: flex; flex-direction: column; gap: 4px; flex-grow: 1; min-width: 0; }
-        .video-title {
-            font-size: 16px; font-weight: 500; line-height: 1.4;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-        }
-        .video-stats { font-size: 12px; color: var(--cor-texto-secundaria); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        /* 3.2. SEÇÃO SHORTS */
-        .shorts-container {
-            display: flex; gap: 12px; overflow-x: auto; padding: 0 16px;
-            scrollbar-width: none; -ms-overflow-style: none;
-        }
-        .shorts-container::-webkit-scrollbar { display: none; }
-        .short-card { width: 160px; flex-shrink: 0; display: flex; flex-direction: column; cursor: pointer; }
-        .short-card .thumbnail-container { aspect-ratio: 9 / 14; border-radius: 12px; }
-        .short-card .video-title { font-size: 14px; padding-top: 8px; }
-        .short-card .video-stats { font-size: 12px; }
+        .details { display: flex; padding: 12px; gap: 12px; }
+        .avatar { width: 36px; height: 36px; background: #5a3ab6; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .info h3 { margin: 0; font-size: 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .meta { color: var(--cor-cinza); font-size: 12px; margin-top: 4px; }
 
-        /* 4. BARRA DE NAVEGAÇÃO INFERIOR */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height);
-            background-color: var(--cor-fundo); display: flex; justify-content: space-around;
-            border-top: 1px solid var(--cor-borda); z-index: 1000;
-        }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--cor-texto-secundaria); text-decoration: none; flex-grow: 1;
-            font-size: 10px; gap: 4px;
-        }
-        .nav-item.active { color: var(--cor-texto-primaria); }
-        .nav-item .icon-svg { width: 24px; height: 24px; }
-        .nav-item-create .icon-svg { width: 38px; height: 38px; margin-top: -8px; }
-
-        /* 5. PLAYER DE VÍDEO */
-        .video-player-overlay {
+        /* PLAYER OVERLAY */
+        .player-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.95); display: none; align-items: center; justify-content: center;
-            z-index: 2000; opacity: 0; transition: opacity 0.3s ease;
+            background: #000; display: none; flex-direction: column; z-index: 1000;
         }
-        .video-player-overlay.visible { display: flex; opacity: 1; }
-        .video-player-container { width: 100%; max-width: 1200px; aspect-ratio: 16 / 9; background-color: #000; position: relative; overflow: hidden; }
-        .video-player-container video { width: 100%; height: 100%; }
-        .close-player {
-            position: absolute; top: 15px; left: 15px; background: rgba(40, 40, 40, 0.7);
-            border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%;
-            font-size: 20px; cursor: pointer; z-index: 20; transition: background-color 0.2s;
+        .player-overlay.active { display: flex; }
+        .close-btn { padding: 15px; color: white; font-size: 20px; cursor: pointer; background: #111; }
+        iframe { width: 100%; aspect-ratio: 16/9; border: none; }
+
+        /* NAV BAIXO */
+        .nav-bar {
+            position: fixed; bottom: 0; width: 100%; height: 60px;
+            background: var(--cor-fundo); border-top: 1px solid #333;
+            display: flex; justify-content: space-around; align-items: center;
         }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--cor-cinza); text-decoration: none; }
+        .nav-item.active { color: white; }
     </style>
 </head>
 <body>
 
-    <!-- ÍCONES SVG EMBUTIDOS -->
-    <svg style="position: absolute; width: 0; height: 0; overflow: hidden;">
-        <symbol id="icon-search" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></symbol>
-        <symbol id="icon-notifications" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></symbol>
-        <symbol id="icon-home" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></symbol>
-        <symbol id="icon-shorts-logo" viewBox="0 0 24 24"><path d="m14.97,11.33-3.69-2.13c-.3-.17-.68-.17-.98,0L6.6,11.33c-.3.17-.49.5-.49.87v4.27c0,.37.19.7.49.87l3.69,2.13c.3.17.68.17.98,0l3.69-2.13c.3-.17.49-.5.49-.87v-4.27c0-.37-.19-.7-.49-.87Zm-4.18,5.4-2.21-1.28v-2.55l2.21,1.28v2.55Zm.5-1.46v-2.55l2.21-1.28v2.55l-2.21,1.28ZM17.4,8.55l-4.17-2.41c-.6-.35-1.3-.35-1.9,0L7.17,8.55c-.6.35-.97,1-.97,1.7v4.86c0,.7.37,1.35.97,1.7l4.17,2.41c.6.35,1.3.35,1.9,0l4.17-2.41c.6-.35.97-1,.97-1.7v-4.86c0-.7-.37-1.35-.97-1.7Z"/></symbol>
-        <symbol id="icon-create" viewBox="0 0 24 24"><path d="M12,2C6.48,2,2,6.48,2,12s4.48,10,10,10s10-4.48,10-10S17.52,2,12,2z M17,13h-4v4h-2v-4H7v-2h4V7h2v4h4V13z"/></symbol>
-        <symbol id="icon-subscriptions" viewBox="0 0 24 24"><path d="M20 8H4V6h16v2zm-2-6H6v2h12V2zm4 10v8c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2zm-6 4l-6-3.27v6.53L16 16z"/></symbol>
-        <symbol id="icon-library" viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z"/></symbol>
-    </svg>
-
-    <!-- 1. HEADER -->
     <header class="header">
-        <div class="header-left">
-            <a href="#" class="logo">
-                <svg viewBox="0 0 40 28"><path d="M38.3,4.6c-0.4-1.6-1.7-2.9-3.3-3.3C31.5,0.5,20,0.5,20,0.5s-11.5,0-15,0.8C3.4,1.7,2.1,2.9,1.7,4.6C0.9,8,0.9,14,0.9,14s0,6,0.8,9.4c0.4,1.6,1.7,2.9,3.3,3.3C8.5,27.5,20,27.5,20,27.5s11.5,0,15-0.8c1.6-0.4,2.9-1.7,3.3-3.3c0.8-3.4,0.8-9.4,0.8-9.4S39.1,8,38.3,4.6z M16,19.5V8.5l9,5.5L16,19.5z" fill="#FF0000"></path></svg>
-                <span>Premium</span>
-            </a>
-        </div>
-        <div class="header-right">
-            <button class="header-icon"><svg class="icon-svg" width="24" height="24"><use href="#icon-notifications"></use></svg></button>
-            <button class="header-icon"><svg class="icon-svg" width="24" height="24"><use href="#icon-search"></use></svg></button>
-            <div class="user-avatar"></div>
+        <div class="logo"><span class="logo-icon">▶</span> Premium</div>
+        <div style="display: flex; gap: 15px;">
+            <span>🔔</span>
+            <span>🔍</span>
+            <div class="avatar" style="width: 28px; height: 28px; font-size: 12px;">B</div>
         </div>
     </header>
 
-    <!-- 2. CONTEÚDO PRINCIPAL -->
-    <main class="main-content">
-        <div class="video-list"></div>
-        <section class="content-section">
-            <h2 class="section-title">
-                <svg class="icon-svg" width="24" height="24" style="color:var(--cor-destaque)"><use href="#icon-shorts-logo"></use></svg>
-                <span>Shorts</span>
-            </h2>
-            <div class="shorts-container"></div>
-        </section>
-        <div class="more-videos-grid"></div>
-    </main>
-    
-    <!-- 3. BARRA DE NAVEGAÇÃO INFERIOR -->
-    <nav class="bottom-nav">
-        <a href="#" class="nav-item active"><svg class="icon-svg"><use href="#icon-home"></use></svg><span>Início</span></a>
-        <a href="#" class="nav-item"><svg class="icon-svg"><use href="#icon-shorts-logo"></use></svg><span>Shorts</span></a>
-        <a href="#" class="nav-item nav-item-create"><svg class="icon-svg"><use href="#icon-create"></use></svg></a>
-        <a href="#" class="nav-item"><svg class="icon-svg"><use href="#icon-subscriptions"></use></svg><span>Inscrições</span></a>
-        <a href="#" class="nav-item"><svg class="icon-svg"><use href="#icon-library"></use></svg><span>Biblioteca</span></a>
-    </nav>
-    
-    <!-- 4. PLAYER DE VÍDEO (POP-UP) -->
-    <div class="video-player-overlay">
-        <div class="video-player-container">
-            <button class="close-player">&times;</button>
-            <video id="main-video" playsinline controls></video>
-        </div>
+    <main id="video-list"></main>
+
+    <div class="player-overlay" id="player">
+        <div class="close-btn" onclick="closeVideo()">✕ Fechar Vídeo</div>
+        <div id="iframe-container"></div>
     </div>
 
+    <nav class="nav-bar">
+        <a href="#" class="nav-item active">🏠<span>Início</span></a>
+        <a href="#" class="nav-item">⚡<span>Shorts</span></a>
+        <div style="font-size: 30px;">⊕</div>
+        <a href="#" class="nav-item">📺<span>Inscrições</span></a>
+        <a href="#" class="nav-item">📚<span>Biblioteca</span></a>
+    </nav>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-
-        // --- DADOS SIMULADOS COM LINKS SEGUROS E FUNCIONAIS ---
-        const videosData = [
-            { id: 1, type: 'video', title: "Eleições 2026: Band define datas dos primeiros debates | Jornal da Noite", channel: "Band Jornalismo", views: "11 mil", time: "3 dias atrás", thumb: "https://dummyimage.com/1280x720/282828/f1f1f1.png&text=BAND", duration: "2:21", videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" },
-            { id: 2, type: 'short', title: "TROVOADA FORTE + FAZENDO PAMONHA...", views: "3,1 mi", thumb: "https://dummyimage.com/720x1280/282828/f1f1f1.png&text=Short+1", videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4" },
-            { id: 3, type: 'short', title: "Como o meu marido me prepara para o natal brasileiro", views: "1,5 mi", thumb: "https://dummyimage.com/720x1280/282828/f1f1f1.png&text=Short+2", videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" },
-            { id: 4, type: 'video', title: "A Ascensão do JavaScript: Uma História de Inovação", channel: "Dev Masters", views: "2.1 mi", time: "1 mês atrás", thumb: "https://dummyimage.com/1280x720/282828/f1f1f1.png&text=JS", duration: "12:35", videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" },
-            { id: 5, type: 'video', title: "Construindo uma API RESTful com Node.js e Express", channel: "Backend Pro", views: "870 mil", time: "2 semanas atrás", thumb: "https://dummyimage.com/1280x720/282828/f1f1f1.png&text=API", duration: "1:05", videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" },
-            { id: 6, type: 'short', title: "NASA (Jupiter)", views: "10 mi", thumb: "https://dummyimage.com/720x1280/282828/f1f1f1.png&text=NASA", videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4" },
-            { id: 7, type: 'video', title: "Guia Definitivo de Animações com CSS", channel: "Frontend Cafe", views: "1.2 mi", time: "3 meses atrás", thumb: "https://dummyimage.com/1280x720/282828/f1f1f1.png&text=CSS", duration: "9:56", videoUrl: "https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4" }
+        // Dados Reais do YouTube para testar
+        const videos = [
+            { id: "5U7bE06_z7I", title: "O Melhor do Piseiro e Sanfona 2026 - Especial Bibiu", views: "1M", time: "3 dias", channel: "Canal Oficial" },
+            { id: "jfKfPfyJRdk", title: "Natureza em 8K - Vídeo para Testar sua Tela", views: "500k", time: "1 semana", channel: "Mundo Natureza" },
+            { id: "dQw4w9WgXcQ", title: "Top Músicas Internacionais - Sem Ads", views: "2B", time: "1 ano", channel: "Vevo Music" }
         ];
 
-        // --- SELETORES DE ELEMENTOS ---
-        const videoList = document.querySelector('.video-list');
-        const shortsContainer = document.querySelector('.shorts-container');
-        const moreVideosGrid = document.querySelector('.more-videos-grid');
-        const playerOverlay = document.querySelector('.video-player-overlay');
-        const videoPlayer = document.getElementById('main-video');
-        const closePlayerBtn = document.querySelector('.close-player');
+        const container = document.getElementById('video-list');
 
-        // --- FUNÇÕES DE RENDERIZAÇÃO ---
-        function createVideoCard(video) {
-            const card = document.createElement('div');
-            card.className = 'video-card';
-            card.innerHTML = `<div class="thumbnail-container"><img src="${video.thumb}" alt="${video.title}" loading="lazy"><span class="video-duration">${video.duration}</span></div><div class="video-details"><div class="channel-avatar"></div><div class="video-info"><h3 class="video-title">${video.title}</h3><span class="video-stats">${video.channel} • ${video.views} visualizações • ${video.time}</span></div></div>`;
-            card.addEventListener('click', () => openPlayer(video.videoUrl));
-            return card;
+        function renderVideos() {
+            videos.forEach(v => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.onclick = () => openVideo(v.id);
+                card.innerHTML = `
+                    <div class="thumbnail">
+                        <img src="https://img.youtube.com/vi/${v.id}/maxresdefault.jpg">
+                        <span class="duration">10:00</span>
+                    </div>
+                    <div class="details">
+                        <div class="avatar">B</div>
+                        <div class="info">
+                            <h3>${v.title}</h3>
+                            <div class="meta">${v.channel} • ${v.views} views • há ${v.time}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        function createShortCard(video) {
-            const card = document.createElement('div');
-            card.className = 'short-card';
-            card.innerHTML = `<div class="thumbnail-container"><img src="${video.thumb}" alt="${video.title}" loading="lazy"></div><h4 class="video-title">${video.title}</h4><span class="video-stats">${video.views} visualizações</span>`;
-            card.addEventListener('click', () => openPlayer(video.videoUrl));
-            return card;
+        function openVideo(id) {
+            const player = document.getElementById('player');
+            const iframeCon = document.getElementById('iframe-container');
+            player.classList.add('active');
+            iframeCon.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`;
+            document.body.style.overflow = 'hidden';
         }
 
-        function populateContent() {
-            const regularVideos = videosData.filter(v => v.type === 'video');
-            const shorts = videosData.filter(v => v.type === 'short');
-            
-            if (regularVideos.length > 0) videoList.appendChild(createVideoCard(regularVideos[0]));
-            shorts.forEach(short => shortsContainer.appendChild(createShortCard(short)));
-            regularVideos.slice(1).forEach(video => moreVideosGrid.appendChild(createVideoCard(video)));
+        function closeVideo() {
+            const player = document.getElementById('player');
+            document.getElementById('iframe-container').innerHTML = '';
+            player.classList.remove('active');
+            document.body.style.overflow = 'auto';
         }
 
-        // --- PLAYER DE VÍDEO ---
-        function openPlayer(videoUrl) {
-            playerOverlay.classList.add('visible');
-            document.body.style.overflow = 'hidden'; // Impede o scroll do fundo
-            videoPlayer.src = videoUrl;
-            videoPlayer.play().catch(e => console.error("Erro ao tentar tocar o vídeo:", e));
-        }
-
-        function closePlayer() {
-            playerOverlay.classList.remove('visible');
-            document.body.style.overflow = ''; // Restaura o scroll
-            videoPlayer.pause();
-            videoPlayer.src = '';
-        }
-        
-        closePlayerBtn.addEventListener('click', closePlayer);
-        playerOverlay.addEventListener('click', (e) => { if (e.target === playerOverlay) closePlayer(); });
-
-        // --- INICIALIZAÇÃO ---
-        populateContent();
-    });
+        renderVideos();
     </script>
 </body>
 </html>
