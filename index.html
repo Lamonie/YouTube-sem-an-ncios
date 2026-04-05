@@ -7,139 +7,117 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0f0f0f; color: white; margin: 0; font-family: 'Roboto', sans-serif; overflow-x: hidden; }
+        body { background-color: #0f0f0f; color: white; margin: 0; font-family: 'Roboto', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .video-container { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; }
-        iframe { width: 100%; height: 100%; border: none; }
-        .active-tab { color: white !important; }
-        .bottom-nav { background: rgba(15, 15, 15, 0.98); border-top: 1px solid #272727; }
-        .filter-btn { background: #272727; white-space: nowrap; padding: 6px 12px; border-radius: 8px; font-size: 14px; font-weight: 500; }
-        .filter-btn.active { background: white; color: black; }
+        .video-box { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; }
+        iframe { width: 100%; height: 100%; border-radius: 12px; border: none; }
+        .bottom-nav { background: #0f0f0f; border-top: 1px solid #272727; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
+        .card-video { cursor: pointer; transition: 0.2s; }
+        .card-video:active { opacity: 0.5; }
     </style>
 </head>
-<body class="pb-20">
+<body class="pb-24">
 
     <nav class="fixed top-0 w-full bg-[#0f0f0f] flex justify-between items-center px-4 py-2 z-50">
         <div class="flex items-center gap-4">
-            <i onclick="toggleMenu()" class="fa-solid fa-bars text-xl cursor-pointer"></i>
+            <i class="fa-solid fa-bars text-xl" onclick="alert('Menu em manutenção')"></i>
             <div class="flex items-center gap-1">
                 <i class="fa-brands fa-youtube text-red-600 text-2xl"></i>
                 <span class="font-bold text-lg tracking-tighter">Premium</span>
             </div>
         </div>
-        <div class="flex items-center gap-5 text-xl">
+        <div class="flex items-center gap-5">
             <i class="fa-solid fa-tower-broadcast"></i>
             <i class="fa-solid fa-bell"></i>
-            <i onclick="showSearch()" class="fa-solid fa-magnifying-glass"></i>
+            <i class="fa-solid fa-magnifying-glass"></i>
             <div class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-[10px] font-bold">B</div>
         </div>
     </nav>
 
-    <div id="search-bar" class="hidden fixed top-0 left-0 w-full bg-[#0f0f0f] p-3 z-[60] flex gap-2 items-center">
-        <i onclick="showSearch()" class="fa-solid fa-arrow-left p-2"></i>
-        <input id="q" type="text" placeholder="Pesquisar sem anúncios..." class="flex-1 bg-[#121212] border border-[#333] rounded-full px-4 py-1.5 focus:outline-none">
-        <button onclick="buscar()" class="bg-[#272727] p-2 rounded-full px-4">OK</button>
+    <div id="reproduzir" class="hidden pt-14 px-2">
+        <div class="video-box" id="player-div"></div>
+        <h2 id="titulo-video" class="text-lg font-bold mt-3 px-2"></h2>
+        <div class="flex items-center gap-3 p-3 bg-[#272727] rounded-xl mt-3 mx-2">
+            <div class="w-9 h-9 bg-red-600 rounded-full flex items-center justify-center">B</div>
+            <div class="flex-1 text-sm"><b>Bibiu Galdino</b><br><span class="text-gray-400 text-xs">Sem propagandas</span></div>
+            <button class="bg-white text-black px-4 py-1 rounded-full font-bold text-xs">Inscrever-se</button>
+        </div>
     </div>
 
-    <div class="fixed top-12 w-full bg-[#0f0f0f] py-3 px-4 flex gap-3 overflow-x-auto no-scrollbar z-40">
-        <div class="filter-btn active">Tudo</div>
-        <div class="filter-btn" onclick="buscar('Notícias')">Notícias</div>
-        <div class="filter-btn" onclick="buscar('Piseiro 2026')">Piseiro</div>
-        <div class="filter-btn" onclick="buscar('Música')">Música</div>
-        <div class="filter-btn" onclick="buscar('Ao vivo')">Ao vivo</div>
+    <div id="filtros" class="pt-14 px-4 flex gap-3 overflow-x-auto no-scrollbar py-4">
+        <button class="bg-white text-black px-4 py-1 rounded-lg text-sm font-bold">Tudo</button>
+        <button class="bg-[#272727] px-4 py-1 rounded-lg text-sm font-bold whitespace-nowrap">Piseiro 2026</button>
+        <button class="bg-[#272727] px-4 py-1 rounded-lg text-sm font-bold">Sanfona</button>
+        <button class="bg-[#272727] px-4 py-1 rounded-lg text-sm font-bold">Notícias</button>
     </div>
 
-    <main id="content" class="pt-28 px-4 flex flex-col gap-8">
-        </main>
+    <main id="lista" class="px-4 flex flex-col gap-8">
+        
+        <div class="card-video" onclick="tocar('5U7bE06_z7I', 'O Melhor do Piseiro e Sanfona 2026')">
+            <img src="https://img.youtube.com/vi/5U7bE06_z7I/maxresdefault.jpg" class="w-full rounded-xl aspect-video object-cover">
+            <div class="flex gap-3 mt-3">
+                <div class="w-10 h-10 bg-gray-800 rounded-full"></div>
+                <div>
+                    <h3 class="text-sm font-bold leading-tight">O Melhor do Piseiro e Sanfona 2026 - Especial Bibiu</h3>
+                    <p class="text-gray-400 text-xs mt-1">Canal Oficial • 1M views</p>
+                </div>
+            </div>
+        </div>
 
-    <div class="bottom-nav fixed bottom-0 w-full flex justify-around items-center py-2 z-50">
-        <div class="flex flex-col items-center gap-1 text-[#aaa]" onclick="location.reload()">
-            <i class="fa-solid fa-house text-lg active-tab"></i>
+        <div class="card-video" onclick="tocar('jfKfPfyJRdk', 'Natureza em 8K - Vídeo para Testar sua Tela')">
+            <img src="https://img.youtube.com/vi/jfKfPfyJRdk/maxresdefault.jpg" class="w-full rounded-xl aspect-video object-cover">
+            <div class="flex gap-3 mt-3">
+                <div class="w-10 h-10 bg-gray-800 rounded-full"></div>
+                <div>
+                    <h3 class="text-sm font-bold leading-tight">Natureza em 8K - Vídeo para Testar sua Tela</h3>
+                    <p class="text-gray-400 text-xs mt-1">Mundo Natureza • 500k views</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-video" onclick="tocar('dQw4w9WgXcQ', 'Top Músicas Internacionais - Sem Ads')">
+            <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" class="w-full rounded-xl aspect-video object-cover">
+            <div class="flex gap-3 mt-3">
+                <div class="w-10 h-10 bg-gray-800 rounded-full"></div>
+                <div>
+                    <h3 class="text-sm font-bold leading-tight">Top Músicas Internacionais - Sem Ads</h3>
+                    <p class="text-gray-400 text-xs mt-1">Vevo Music • 2B views</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="bottom-nav">
+        <div class="flex flex-col items-center text-white" onclick="location.reload()">
+            <i class="fa-solid fa-house text-lg"></i>
             <span class="text-[10px]">Início</span>
         </div>
-        <div class="flex flex-col items-center gap-1 text-[#aaa]">
+        <div class="flex flex-col items-center text-gray-400">
             <i class="fa-solid fa-bolt text-lg"></i>
             <span class="text-[10px]">Shorts</span>
         </div>
-        <div class="flex flex-col items-center gap-1">
-            <i class="fa-solid fa-circle-plus text-3xl"></i>
-        </div>
-        <div class="flex flex-col items-center gap-1 text-[#aaa]">
+        <i class="fa-solid fa-circle-plus text-3xl"></i>
+        <div class="flex flex-col items-center text-gray-400">
             <i class="fa-solid fa-layer-group text-lg"></i>
             <span class="text-[10px]">Inscrições</span>
         </div>
-        <div class="flex flex-col items-center gap-1 text-[#aaa]">
-            <i class="fa-solid fa-video-slash text-lg"></i>
+        <div class="flex flex-col items-center text-gray-400">
+            <i class="fa-solid fa-video text-lg"></i>
             <span class="text-[10px]">Biblioteca</span>
         </div>
     </div>
 
     <script>
-        // Função para remover anúncios: Usamos o player "Piped" ou "Cloudtube" que limpa o sinal
-        function play(id, title) {
-            window.scrollTo(0,0);
-            const content = document.getElementById('content');
-            content.innerHTML = `
-                <div class="animate-in fade-in duration-500">
-                    <div class="video-container">
-                        <iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&showinfo=0&modestbranding=1" allowfullscreen allow="autoplay"></iframe>
-                    </div>
-                    <h2 class="text-lg font-bold mt-3">${title}</h2>
-                    <div class="flex items-center gap-3 mt-4 bg-[#272727] p-3 rounded-xl">
-                        <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center font-bold">B</div>
-                        <div class="flex-1">
-                            <p class="font-bold text-sm">Bibiu Galdino Oficial</p>
-                            <p class="text-xs text-gray-400">Premium Ativado</p>
-                        </div>
-                        <button class="bg-white text-black px-4 py-1.5 rounded-full text-sm font-bold">Inscrever-se</button>
-                    </div>
-                </div>
-                <h3 class="font-bold mt-6">Próximos vídeos</h3>
-                <div id="related"></div>
+        function tocar(id, titulo) {
+            document.getElementById('reproduzir').classList.remove('hidden');
+            document.getElementById('filtros').classList.add('hidden');
+            document.getElementById('player-div').innerHTML = `
+                <iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             `;
-            carregarSugeridos();
+            document.getElementById('titulo-video').innerText = titulo;
+            window.scrollTo({top: 0, behavior: 'smooth'});
         }
-
-        async function buscar(termo = 'Destaques Brasil 2026') {
-            const q = termo || document.getElementById('q').value;
-            const container = document.getElementById('content');
-            container.innerHTML = "<p class='text-center py-10'>Limpando anúncios e carregando...</p>";
-            document.getElementById('search-bar').classList.add('hidden');
-
-            try {
-                // API que puxa os dados limpos
-                const res = await fetch(`https://pipedapi.kavin.rocks/search?q=${encodeURIComponent(q)}&filter=videos`);
-                const data = await res.json();
-                
-                container.innerHTML = "";
-                data.items.forEach(v => {
-                    const id = v.url.split('=')[1];
-                    container.innerHTML += `
-                        <div class="flex flex-col gap-3" onclick="play('${id}', '${v.title.replace(/'/g, "")}')">
-                            <div class="relative">
-                                <img src="${v.thumbnail}" class="w-full aspect-video object-cover rounded-xl">
-                                <span class="absolute bottom-2 right-2 bg-black/80 text-[10px] px-1 rounded">${v.duration ? Math.floor(v.duration/60)+":"+(v.duration%60).toString().padStart(2,'0') : 'HD'}</span>
-                            </div>
-                            <div class="flex gap-3">
-                                <div class="w-9 h-9 bg-gray-800 rounded-full flex-shrink-0"></div>
-                                <div class="flex-1">
-                                    <h3 class="text-sm font-bold leading-tight line-clamp-2">${v.title}</h3>
-                                    <p class="text-[#aaa] text-[12px] mt-1">${v.uploaderName} • ${v.viewCount.toLocaleString()} views</p>
-                                </div>
-                                <i class="fa-solid fa-ellipsis-vertical text-[#aaa]"></i>
-                            </div>
-                        </div>
-                    `;
-                });
-            } catch (e) {
-                container.innerHTML = "<p class='text-red-500 text-center'>Tente novamente em instantes.</p>";
-            }
-        }
-
-        function toggleMenu() { alert("Menu Lateral Ativado! Aqui você verá seu histórico e álbuns."); }
-        function showSearch() { document.getElementById('search-bar').classList.toggle('hidden'); }
-
-        window.onload = () => buscar();
     </script>
 </body>
 </html>
