@@ -6,118 +6,182 @@
     <title>YouTube Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
-        body { background-color: #0f0f0f; color: white; margin: 0; font-family: 'Roboto', sans-serif; }
+        /* CSS PARA O VISUAL IDENTICO AO APP */
+        body { background-color: #0f0f0f; color: white; margin: 0; font-family: 'Roboto', sans-serif; overflow-x: hidden; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .video-box { width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; }
-        iframe { width: 100%; height: 100%; border-radius: 12px; border: none; }
-        .bottom-nav { background: #0f0f0f; border-top: 1px solid #272727; position: fixed; bottom: 0; width: 100%; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
-        .card-video { cursor: pointer; transition: 0.2s; }
-        .card-video:active { opacity: 0.5; }
+        
+        .video-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        .bottom-nav { 
+            position: fixed; bottom: 0; width: 100%; 
+            background: rgba(15, 15, 15, 0.98); 
+            border-top: 1px solid #272727; 
+            display: flex; justify-content: space-around; 
+            padding: 10px 0; z-index: 100; 
+        }
+
+        .side-menu {
+            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
+            background: #0f0f0f; z-index: 200; transition: 0.3s;
+            border-right: 1px solid #272727; padding: 20px;
+        }
+        .side-menu.open { left: 0; }
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 150; display: none;
+        }
+
+        .filter-btn { 
+            background: #272727; padding: 6px 15px; border-radius: 8px; 
+            font-size: 14px; font-weight: 500; white-space: nowrap; 
+        }
+        .filter-btn.active { background: white; color: black; }
+        
+        .card-video { width: 100%; margin-bottom: 25px; cursor: pointer; }
+        .card-video img { width: 100%; border-radius: 12px; object-fit: cover; aspect-ratio: 16/9; }
+        
+        #search-box {
+            display: none; position: fixed; top: 0; left: 0; width: 100%;
+            background: #0f0f0f; padding: 10px; z-index: 300; gap: 10px;
+        }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-20">
+
+    <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+    <div id="menu" class="side-menu">
+        <div class="flex items-center gap-4 mb-8">
+            <i class="fa-solid fa-bars text-xl" onclick="toggleMenu()"></i>
+            <i class="fa-brands fa-youtube text-red-600 text-2xl"></i>
+            <span class="font-bold text-lg">Premium</span>
+        </div>
+        <div class="flex flex-col gap-6 text-lg">
+            <div onclick="location.reload()"><i class="fa-solid fa-house mr-4"></i> Início</div>
+            <div><i class="fa-solid fa-bolt mr-4"></i> Shorts</div>
+            <div><i class="fa-solid fa-layer-group mr-4"></i> Inscrições</div>
+            <hr class="border-[#272727]">
+            <div><i class="fa-solid fa-video mr-4"></i> Biblioteca</div>
+            <div><i class="fa-solid fa-clock-rotate-left mr-4"></i> Histórico</div>
+        </div>
+    </div>
 
     <nav class="fixed top-0 w-full bg-[#0f0f0f] flex justify-between items-center px-4 py-2 z-50">
         <div class="flex items-center gap-4">
-            <i class="fa-solid fa-bars text-xl" onclick="alert('Menu em manutenção')"></i>
+            <i class="fa-solid fa-bars text-xl" onclick="toggleMenu()"></i>
             <div class="flex items-center gap-1">
                 <i class="fa-brands fa-youtube text-red-600 text-2xl"></i>
                 <span class="font-bold text-lg tracking-tighter">Premium</span>
             </div>
         </div>
-        <div class="flex items-center gap-5">
+        <div class="flex items-center gap-5 text-lg">
             <i class="fa-solid fa-tower-broadcast"></i>
             <i class="fa-solid fa-bell"></i>
-            <i class="fa-solid fa-magnifying-glass"></i>
+            <i class="fa-solid fa-magnifying-glass" onclick="toggleSearch()"></i>
             <div class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-[10px] font-bold">B</div>
         </div>
     </nav>
 
-    <div id="reproduzir" class="hidden pt-14 px-2">
-        <div class="video-box" id="player-div"></div>
-        <h2 id="titulo-video" class="text-lg font-bold mt-3 px-2"></h2>
-        <div class="flex items-center gap-3 p-3 bg-[#272727] rounded-xl mt-3 mx-2">
-            <div class="w-9 h-9 bg-red-600 rounded-full flex items-center justify-center">B</div>
-            <div class="flex-1 text-sm"><b>Bibiu Galdino</b><br><span class="text-gray-400 text-xs">Sem propagandas</span></div>
-            <button class="bg-white text-black px-4 py-1 rounded-full font-bold text-xs">Inscrever-se</button>
+    <div id="search-box" class="flex items-center">
+        <i class="fa-solid fa-arrow-left p-2" onclick="toggleSearch()"></i>
+        <input id="search-input" type="text" placeholder="Pesquisar..." class="flex-1 bg-[#121212] border-none rounded-full px-4 py-1 focus:outline-none">
+        <button onclick="realizarBusca()" class="bg-[#272727] px-4 py-1 rounded-full">OK</button>
+    </div>
+
+    <div id="player-area" class="hidden pt-12">
+        <div class="video-wrapper" id="main-player"></div>
+        <div class="p-4">
+            <h2 id="player-title" class="text-lg font-bold"></h2>
+            <div class="flex items-center gap-3 mt-4 bg-[#272727] p-3 rounded-xl">
+                <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center font-bold">B</div>
+                <div class="flex-1"><p class="font-bold text-sm">Bibiu Galdino Oficial</p><p class="text-xs text-gray-400">Premium</p></div>
+                <button class="bg-white text-black px-4 py-1.5 rounded-full text-sm font-bold">Inscrever-se</button>
+            </div>
         </div>
     </div>
 
-    <div id="filtros" class="pt-14 px-4 flex gap-3 overflow-x-auto no-scrollbar py-4">
-        <button class="bg-white text-black px-4 py-1 rounded-lg text-sm font-bold">Tudo</button>
-        <button class="bg-[#272727] px-4 py-1 rounded-lg text-sm font-bold whitespace-nowrap">Piseiro 2026</button>
-        <button class="bg-[#272727] px-4 py-1 rounded-lg text-sm font-bold">Sanfona</button>
-        <button class="bg-[#272727] px-4 py-1 rounded-lg text-sm font-bold">Notícias</button>
+    <div id="filtros-bar" class="pt-14 px-4 flex gap-3 overflow-x-auto no-scrollbar py-4">
+        <div class="filter-btn active" onclick="realizarBusca('Piseiro 2026')">Tudo</div>
+        <div class="filter-btn" onclick="realizarBusca('Notícias Brasil')">Notícias</div>
+        <div class="filter-btn" onclick="realizarBusca('Sanfona Luiz Gonzaga')">Sanfona</div>
+        <div class="filter-btn" onclick="realizarBusca('Música 2026')">Música</div>
+        <div class="filter-btn" onclick="realizarBusca('Ao vivo')">Ao vivo</div>
     </div>
 
-    <main id="lista" class="px-4 flex flex-col gap-8">
-        
-        <div class="card-video" onclick="tocar('5U7bE06_z7I', 'O Melhor do Piseiro e Sanfona 2026')">
-            <img src="https://img.youtube.com/vi/5U7bE06_z7I/maxresdefault.jpg" class="w-full rounded-xl aspect-video object-cover">
-            <div class="flex gap-3 mt-3">
-                <div class="w-10 h-10 bg-gray-800 rounded-full"></div>
-                <div>
-                    <h3 class="text-sm font-bold leading-tight">O Melhor do Piseiro e Sanfona 2026 - Especial Bibiu</h3>
-                    <p class="text-gray-400 text-xs mt-1">Canal Oficial • 1M views</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-video" onclick="tocar('jfKfPfyJRdk', 'Natureza em 8K - Vídeo para Testar sua Tela')">
-            <img src="https://img.youtube.com/vi/jfKfPfyJRdk/maxresdefault.jpg" class="w-full rounded-xl aspect-video object-cover">
-            <div class="flex gap-3 mt-3">
-                <div class="w-10 h-10 bg-gray-800 rounded-full"></div>
-                <div>
-                    <h3 class="text-sm font-bold leading-tight">Natureza em 8K - Vídeo para Testar sua Tela</h3>
-                    <p class="text-gray-400 text-xs mt-1">Mundo Natureza • 500k views</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-video" onclick="tocar('dQw4w9WgXcQ', 'Top Músicas Internacionais - Sem Ads')">
-            <img src="https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg" class="w-full rounded-xl aspect-video object-cover">
-            <div class="flex gap-3 mt-3">
-                <div class="w-10 h-10 bg-gray-800 rounded-full"></div>
-                <div>
-                    <h3 class="text-sm font-bold leading-tight">Top Músicas Internacionais - Sem Ads</h3>
-                    <p class="text-gray-400 text-xs mt-1">Vevo Music • 2B views</p>
-                </div>
-            </div>
-        </div>
-
-    </main>
+    <main id="video-grid" class="px-4 flex flex-col"></main>
 
     <div class="bottom-nav">
-        <div class="flex flex-col items-center text-white" onclick="location.reload()">
-            <i class="fa-solid fa-house text-lg"></i>
-            <span class="text-[10px]">Início</span>
-        </div>
-        <div class="flex flex-col items-center text-gray-400">
-            <i class="fa-solid fa-bolt text-lg"></i>
-            <span class="text-[10px]">Shorts</span>
-        </div>
+        <div class="flex flex-col items-center" onclick="location.reload()"><i class="fa-solid fa-house text-lg"></i><span class="text-[10px]">Início</span></div>
+        <div class="flex flex-col items-center text-gray-400"><i class="fa-solid fa-bolt text-lg"></i><span class="text-[10px]">Shorts</span></div>
         <i class="fa-solid fa-circle-plus text-3xl"></i>
-        <div class="flex flex-col items-center text-gray-400">
-            <i class="fa-solid fa-layer-group text-lg"></i>
-            <span class="text-[10px]">Inscrições</span>
-        </div>
-        <div class="flex flex-col items-center text-gray-400">
-            <i class="fa-solid fa-video text-lg"></i>
-            <span class="text-[10px]">Biblioteca</span>
-        </div>
+        <div class="flex flex-col items-center text-gray-400"><i class="fa-solid fa-layer-group text-lg"></i><span class="text-[10px]">Inscrições</span></div>
+        <div class="flex flex-col items-center text-gray-400"><i class="fa-solid fa-video text-lg"></i><span class="text-[10px]">Biblioteca</span></div>
     </div>
 
     <script>
-        function tocar(id, titulo) {
-            document.getElementById('reproduzir').classList.remove('hidden');
-            document.getElementById('filtros').classList.add('hidden');
-            document.getElementById('player-div').innerHTML = `
-                <iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-            `;
-            document.getElementById('titulo-video').innerText = titulo;
-            window.scrollTo({top: 0, behavior: 'smooth'});
+        /* JS PARA AS FUNÇÕES DE PREMIUM */
+        
+        function toggleMenu() {
+            document.getElementById('menu').classList.toggle('open');
+            document.getElementById('overlay').style.display = 
+                document.getElementById('menu').classList.contains('open') ? 'block' : 'none';
         }
+
+        function toggleSearch() {
+            const box = document.getElementById('search-box');
+            box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        // Sistema de busca real (via API Invidious/Piped - Não cai)
+        async function realizarBusca(termo = 'Destaques Piseiro 2026') {
+            const input = document.getElementById('search-input').value;
+            const query = termo !== 'Destaques Piseiro 2026' ? termo : (input || termo);
+            
+            const grid = document.getElementById('video-grid');
+            grid.innerHTML = "<p class='text-center py-20'>Carregando Premium...</p>";
+            document.getElementById('search-box').style.display = 'none';
+
+            try {
+                const res = await fetch(`https://pipedapi.kavin.rocks/search?q=${encodeURIComponent(query)}&filter=videos`);
+                const data = await res.json();
+                
+                grid.innerHTML = "";
+                data.items.forEach(v => {
+                    const id = v.url.split('=')[1];
+                    grid.innerHTML += `
+                        <div class="card-video" onclick="playVideo('${id}', '${v.title.replace(/'/g, "")}')">
+                            <img src="${v.thumbnail}" alt="thumb">
+                            <div class="flex gap-3 mt-3">
+                                <div class="w-9 h-9 bg-gray-800 rounded-full flex-shrink-0"></div>
+                                <div class="flex-1">
+                                    <h3 class="text-sm font-bold leading-tight line-clamp-2">${v.title}</h3>
+                                    <p class="text-[#aaa] text-[12px] mt-1">${v.uploaderName} • ${v.viewCount.toLocaleString()} views</p>
+                                </div>
+                                <i class="fa-solid fa-ellipsis-vertical text-[#aaa]"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (e) {
+                grid.innerHTML = "<p class='text-red-500 text-center py-20'>Erro ao conectar. Tente novamente.</p>";
+            }
+        }
+
+        function playVideo(id, title) {
+            window.scrollTo(0,0);
+            document.getElementById('player-area').classList.remove('hidden');
+            document.getElementById('filtros-bar').classList.add('hidden');
+            // Embed limpo sem anúncios
+            document.getElementById('main-player').innerHTML = `
+                <iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&modestbranding=1&rel=0" allowfullscreen allow="autoplay"></iframe>
+            `;
+            document.getElementById('player-title').innerText = title;
+        }
+
+        // Inicia o site carregando vídeos
+        window.onload = () => realizarBusca();
     </script>
 </body>
 </html>
