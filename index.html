@@ -3,155 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Lamoniê Flow - Real API Engine</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Lamoniê Flow Ultimate</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --cor-bg: #0f0f0f;
-            --cor-surface: #1e1e1e;
-            --cor-primaria: #ff0000;
-            --cor-texto: #ffffff;
-            --cor-subtexto: #aaaaaa;
+            --fundo: #0f0f0f;
+            --card-bg: #1e1e1e;
+            --youtube-red: #ff0000;
+            --texto-p: #ffffff;
+            --texto-s: #aaaaaa;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background-color: var(--cor-bg);
-            color: var(--cor-texto);
+            background-color: var(--fundo);
+            color: var(--texto-p);
             font-family: 'Roboto', sans-serif;
             padding-bottom: 80px;
             overflow-x: hidden;
         }
 
-        /* HEADER REALÍSTICO */
-        .navbar {
+        /* BARRA SUPERIOR */
+        .app-header {
             position: sticky;
             top: 0;
-            background: var(--cor-bg);
-            padding: 12px 16px;
+            height: 60px;
+            background: rgba(15, 15, 15, 0.98);
+            backdrop-filter: blur(10px);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 16px;
             z-index: 1000;
             border-bottom: 1px solid #282828;
         }
 
-        .logo-box { display: flex; align-items: center; gap: 4px; font-weight: bold; font-size: 20px; color: #fff; text-decoration: none; }
-        .logo-box span { color: var(--cor-primaria); font-size: 26px; }
+        .brand { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .brand span { color: var(--youtube-red); font-size: 28px; }
 
-        /* FEED DE VÍDEOS */
-        .container { display: flex; flex-direction: column; width: 100%; }
-        .video-item { width: 100%; margin-bottom: 20px; cursor: pointer; transition: opacity 0.2s; }
-        .video-item:active { opacity: 0.7; }
+        /* LISTAGEM DE VÍDEOS */
+        .main-feed { padding-top: 10px; }
+        .v-card { width: 100%; margin-bottom: 25px; cursor: pointer; transition: background 0.2s; }
+        .v-card:active { background: #222; }
         
-        .thumb-wrap { width: 100%; aspect-ratio: 16/9; background: #222; position: relative; }
-        .thumb-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .v-thumb { width: 100%; aspect-ratio: 16/9; background: #222; position: relative; }
+        .v-thumb img { width: 100%; height: 100%; object-fit: cover; }
         
-        .video-info { display: flex; padding: 12px; gap: 12px; }
-        .chan-icon { width: 40px; height: 40px; border-radius: 50%; background: #333; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .text-info { flex-grow: 1; }
-        .v-title { font-size: 15px; font-weight: 500; line-height: 1.4; margin-bottom: 4px; color: #fff; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .v-meta { font-size: 12px; color: var(--cor-subtexto); }
+        .v-content { display: flex; padding: 12px 16px; gap: 12px; }
+        .v-avatar { width: 40px; height: 40px; border-radius: 50%; background: #444; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .v-info { flex: 1; }
+        .v-title { font-size: 16px; font-weight: 500; line-height: 1.4; color: #fff; margin-bottom: 4px; }
+        .v-stats { font-size: 13px; color: var(--texto-s); }
 
-        /* PLAYER DE ALTA PERFORMANCE (OVERLAY) */
-        #player-screen {
+        /* PLAYER OVERLAY (O "COLOSSAL") */
+        #player-wrapper {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #000; z-index: 9999; display: none; flex-direction: column;
         }
-        #player-screen.active { display: flex; }
-        
-        .player-controls { padding: 15px; background: #111; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #222; }
-        .btn-fechar { font-size: 22px; cursor: pointer; color: #fff; }
+        #player-wrapper.active { display: flex; }
 
-        #video-embed-box { width: 100%; background: #000; }
-        .video-desc-box { padding: 20px; }
-        .tag-premium { background: var(--cor-primaria); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        .player-nav { padding: 15px; background: #111; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #222; }
+        .close-btn { font-size: 24px; cursor: pointer; }
 
-        /* NAV INFERIOR */
-        .bottom-bar {
+        #yt-api-container { width: 100%; background: #000; display: flex; align-items: center; justify-content: center; }
+        .p-details { padding: 20px; }
+        .p-badge { background: var(--youtube-red); color: #fff; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+
+        /* NAVEGAÇÃO INFERIOR */
+        .tab-bar {
             position: fixed; bottom: 0; width: 100%; height: 65px;
-            background: var(--cor-bg); border-top: 1px solid #282828;
+            background: var(--fundo); border-top: 1px solid #282828;
             display: flex; justify-content: space-around; align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
         }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; font-size: 10px; color: var(--cor-subtexto); text-decoration: none; gap: 4px; }
-        .nav-btn.active { color: #fff; }
+        .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: var(--texto-s); text-decoration: none; }
+        .tab-item.active { color: #fff; }
+        .tab-item svg { width: 24px; height: 24px; margin-bottom: 4px; fill: currentColor; }
+
     </style>
 </head>
 <body>
 
-    <nav class="navbar">
-        <a href="#" class="logo-box"><span>▶</span> Premium</a>
-        <div style="display: flex; gap: 18px;">
-            <span>🔔</span><span>🔍</span>
-            <div class="chan-icon" style="width: 28px; height: 28px; font-size: 12px; background: #004d40;">B</div>
+    <header class="app-header">
+        <div class="brand"><span>▶</span> Premium</div>
+        <div style="display: flex; gap: 20px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <div class="v-avatar" style="width: 28px; height: 28px; font-size: 12px; background: #004d40;">B</div>
         </div>
-    </nav>
+    </header>
 
-    <main class="container" id="main-feed"></main>
+    <main class="main-feed" id="feed-items"></main>
 
-    <div id="player-screen">
-        <div class="player-controls" onclick="stopVideo()">
-            <span class="btn-fechar">✕</span>
+    <div id="player-wrapper">
+        <div class="player-nav" onclick="closePlayer()">
+            <span class="close-btn">✕</span>
             <span style="font-weight: 500;">Modo Premium Ativo</span>
         </div>
-        <div id="video-embed-box">
-            <div id="youtube-api-player"></div>
+        <div id="yt-api-container">
+            <div id="main-player"></div>
         </div>
-        <div class="video-desc-box">
-            <span class="tag-premium">SEM ANÚNCIOS</span>
-            <h2 id="current-title" style="font-size: 18px; margin-bottom: 8px;">Carregando...</h2>
-            <p id="current-chan" style="color: #aaa; font-size: 14px;"></p>
+        <div class="p-details">
+            <span class="p-badge">NO-ADS ENGINE</span>
+            <h2 id="p-title" style="font-size: 18px; margin-bottom: 8px;">Título</h2>
+            <p id="p-chan" style="color: #aaa; font-size: 14px;"></p>
         </div>
     </div>
 
-    <nav class="bottom-bar">
-        <div class="nav-btn active">🏠<span>Início</span></div>
-        <div class="nav-btn">⚡<span>Shorts</span></div>
-        <div style="font-size: 32px; font-weight: 200;">⊕</div>
-        <div class="nav-btn">📺<span>Inscrições</span></div>
-        <div class="nav-btn">📚<span>Biblioteca</span></div>
+    <nav class="tab-bar">
+        <a href="#" class="tab-item active">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Início
+        </a>
+        <a href="#" class="tab-item">
+            <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+            Shorts
+        </a>
+        <div style="font-size: 32px; font-weight: 100;">⊕</div>
+        <a href="#" class="tab-item">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>
+            Inscrições
+        </a>
+        <a href="#" class="tab-item">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>
+            Biblioteca
+        </a>
     </nav>
 
     <script src="https://www.youtube.com/iframe_api"></script>
 
     <script>
-        // Dados reais de IDs do YouTube
-        const playlist = [
-            { id: "5U7bE06_z7I", title: "Piseiro e Sanfona 2026 - O Som do Nordeste", channel: "Bibiu Galdino Oficial" },
-            { id: "4YmXW7XF66o", title: "Curso de Programação Web Profissional", channel: "Dev Master" },
-            { id: "jfKfPfyJRdk", title: "Natureza 8K - Ultra Realismo", channel: "Canais HD" },
-            { id: "dQw4w9WgXcQ", title: "Rick Astley - Premium Quality", channel: "Vevo" }
+        const videoList = [
+            { id: "5U7bE06_z7I", title: "O Melhor do Piseiro 2026 - Bibiu Galdino", channel: "Lamoniê Music", views: "1.2M" },
+            { id: "4YmXW7XF66o", title: "Programação de Apps (Replit Pro)", channel: "Dev Master", views: "300k" },
+            { id: "jfKfPfyJRdk", title: "Natureza 8K Cinematic HD", channel: "World 4K", views: "5.4M" },
+            { id: "dQw4w9WgXcQ", title: "Video de Teste Premium", channel: "System", views: "1.5B" }
         ];
 
         let player;
-        const feed = document.getElementById('main-feed');
 
-        // Renderiza o Feed Real
-        function loadFeed() {
-            playlist.forEach(v => {
-                const item = document.createElement('div');
-                item.className = 'video-item';
-                item.onclick = () => playVideo(v.id, v.title, v.channel);
-                item.innerHTML = `
-                    <div class="thumb-wrap">
+        function renderFeed() {
+            const feed = document.getElementById('feed-items');
+            videoList.forEach(v => {
+                const card = document.createElement('div');
+                card.className = 'v-card';
+                card.onclick = () => openPlayer(v.id, v.title, v.channel);
+                card.innerHTML = `
+                    <div class="v-thumb">
                         <img src="https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg" onerror="this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg'">
                     </div>
-                    <div class="video-info">
-                        <div class="chan-icon">${v.channel.charAt(0)}</div>
-                        <div class="text-info">
+                    <div class="v-content">
+                        <div class="v-avatar">B</div>
+                        <div class="v-info">
                             <h3 class="v-title">${v.title}</h3>
-                            <div class="v-meta">${v.channel} • 1.5M visualizações</div>
+                            <div class="v-stats">${v.channel} • ${v.views} views</div>
                         </div>
                     </div>
                 `;
-                feed.appendChild(item);
+                feed.appendChild(card);
             });
         }
 
-        // Inicializa a API do Player
+        // Função obrigatória da YouTube API
         function onYouTubeIframeAPIReady() {
-            player = new YT.Player('youtube-api-player', {
+            player = new YT.Player('main-player', {
                 height: '100%',
                 width: '100%',
                 playerVars: {
@@ -159,16 +174,15 @@
                     'controls': 1,
                     'modestbranding': 1,
                     'rel': 0,
-                    'showinfo': 0,
                     'origin': window.location.origin
                 }
             });
         }
 
-        function playVideo(id, title, channel) {
-            document.getElementById('player-screen').classList.add('active');
-            document.getElementById('current-title').innerText = title;
-            document.getElementById('current-chan').innerText = channel;
+        function openPlayer(id, title, channel) {
+            document.getElementById('player-wrapper').classList.add('active');
+            document.getElementById('p-title').innerText = title;
+            document.getElementById('p-chan').innerText = channel;
             
             if (player && player.loadVideoById) {
                 player.loadVideoById(id);
@@ -176,15 +190,15 @@
             document.body.style.overflow = 'hidden';
         }
 
-        function stopVideo() {
-            document.getElementById('player-screen').classList.remove('active');
+        function closePlayer() {
+            document.getElementById('player-wrapper').classList.remove('active');
             if (player && player.stopVideo) {
                 player.stopVideo();
             }
             document.body.style.overflow = 'auto';
         }
 
-        window.onload = loadFeed;
+        window.onload = renderFeed;
     </script>
 </body>
 </html>
