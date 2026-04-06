@@ -3,218 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Lamoniê Flow Premium</title>
+    <title>Lamoniê Flow | Premium v5.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
-        /* CONFIGURAÇÕES GERAIS - ESTILO IPHONE 13 PRO MAX */
+        /* [ARQUIVO CSS COMPLETO INTEGRADO] */
         :root {
-            --bg: #0f0f0f;
-            --surface: #1f1f1f;
+            --bg-deep: #050505;
+            --bg-main: #0f0f0f;
+            --bg-surface: #1e1e1e;
             --accent: #ff0000;
-            --text-main: #ffffff;
-            --text-sub: #aaaaaa;
+            --text-high: #ffffff;
+            --text-med: #aaaaaa;
+            --text-low: #717171;
+            --border: rgba(255,255,255,0.1);
             --safe-top: env(safe-area-inset-top);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background-color: var(--bg);
-            color: var(--text-main);
+            background-color: var(--bg-deep);
+            color: var(--text-high);
             font-family: 'Roboto', sans-serif;
             overflow-x: hidden;
+            -webkit-user-select: none;
             padding-top: var(--safe-top);
         }
 
-        /* HEADER PREMIUM */
-        .app-bar {
-            position: sticky;
-            top: 0;
-            height: 60px;
-            background: rgba(15, 15, 15, 0.95);
-            backdrop-filter: blur(15px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 16px;
-            z-index: 1000;
-            border-bottom: 1px solid #222;
+        /* --- LOADING SCREEN --- */
+        #loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-main); z-index: 10000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease;
         }
+        .spinner { width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .brand-logo { font-size: 22px; font-weight: 700; letter-spacing: -1px; display: flex; align-items: center; gap: 5px; }
-        .brand-logo span { color: var(--accent); font-size: 28px; }
-
-        /* FEED DE VÍDEOS REALISTA */
-        .feed-container { padding-bottom: 80px; }
-        
-        .v-card { width: 100%; margin-bottom: 25px; animation: slideUp 0.6s ease-out; }
-        
-        .v-thumbnail {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #222;
-            position: relative;
-            overflow: hidden;
+        /* --- HEADER --- */
+        header {
+            position: sticky; top: 0; height: 60px; background: rgba(15,15,15,0.95);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0 16px; z-index: 5000; border-bottom: 1px solid var(--border);
         }
-        .v-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .v-details { display: flex; padding: 15px; gap: 12px; }
-        .v-avatar { 
-            width: 40px; height: 40px; border-radius: 50%; 
-            background: linear-gradient(135deg, #6e8efb, #a7a7a7);
-            flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; border: 1px solid #333;
-        }
-        
-        .v-info { flex: 1; }
-        .v-title { font-size: 16px; font-weight: 500; line-height: 1.4; margin-bottom: 5px; color: #fff; }
-        .v-stats { font-size: 13px; color: var(--text-sub); }
+        .logo { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 20px; }
+        .logo svg { width: 30px; fill: var(--accent); }
 
-        /* PLAYER ENGINE (O CORAÇÃO DO CÓDIGO) */
+        /* --- CATEGORY CHIPS --- */
+        .categories {
+            display: flex; gap: 10px; padding: 12px 16px; overflow-x: auto;
+            background: var(--bg-main); border-bottom: 1px solid var(--border);
+        }
+        .categories::-webkit-scrollbar { display: none; }
+        .chip {
+            background: #282828; padding: 7px 14px; border-radius: 8px;
+            font-size: 14px; font-weight: 500; white-space: nowrap; border: 1px solid transparent;
+        }
+        .chip.active { background: #fff; color: #000; }
+
+        /* --- VIDEO FEED GRID --- */
+        .feed { padding-bottom: 100px; display: grid; grid-template-columns: 1fr; }
+        .video-card { width: 100%; margin-bottom: 8px; animation: fadeInUp 0.8s ease forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .thumb-container { width: 100%; aspect-ratio: 16/9; background: #1a1a1a; position: relative; }
+        .thumb-container img { width: 100%; height: 100%; object-fit: cover; }
+        .v-time { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+
+        .v-data { display: flex; padding: 12px 16px; gap: 12px; }
+        .chan-img { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(45deg, #333, #555); flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 1px solid var(--border); }
+        .v-text { flex: 1; }
+        .v-title { font-size: 15px; font-weight: 500; line-height: 1.4; color: var(--text-high); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .v-meta { font-size: 12px; color: var(--text-med); margin-top: 4px; }
+
+        /* --- THE COLOSSAL PLAYER OVERLAY --- */
         #player-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; z-index: 2000; display: none; flex-direction: column;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--bg-deep); z-index: 10000; display: none; flex-direction: column;
+            transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
-        #player-overlay.active { display: flex; }
+        #player-overlay.open { display: flex; transform: translateY(0); }
 
-        .player-header {
-            padding: 15px; background: #111; display: flex; 
-            align-items: center; gap: 15px; font-weight: 500;
-            border-bottom: 1px solid #222;
-        }
-        .close-icon { font-size: 24px; cursor: pointer; }
+        .player-bar { height: 50px; display: flex; align-items: center; padding: 0 16px; background: #111; justify-content: space-between; }
+        .player-content { width: 100%; background: #000; position: relative; }
+        #api-frame-holder { width: 100%; aspect-ratio: 16/9; }
 
-        .player-body { flex: 1; display: flex; align-items: center; background: #000; position: relative; }
-        #yt-api-frame { width: 100%; aspect-ratio: 16/9; border: none; }
-
-        .video-meta-box { padding: 20px; background: var(--bg); }
-        .status-pill { 
-            background: #ff0000; color: #fff; padding: 2px 10px; 
-            border-radius: 12px; font-size: 11px; font-weight: bold; margin-bottom: 15px; display: inline-block;
-        }
-
-        /* BARRA DE NAVEGAÇÃO INFERIOR */
+        .player-info { padding: 20px; flex: 1; overflow-y: auto; background: var(--bg-main); border-top-left-radius: 20px; border-top-right-radius: 20px; margin-top: -10px; z-index: 2; }
+        .premium-tag { background: var(--accent); color: white; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-bottom: 12px; display: inline-block; }
+        
+        /* --- NAVIGATION TAB BAR --- */
         .tab-bar {
             position: fixed; bottom: 0; width: 100%; height: 70px;
-            background: var(--bg); border-top: 1px solid #282828;
+            background: rgba(15,15,15,0.98); backdrop-filter: blur(15px);
             display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid var(--border); z-index: 5000;
             padding-bottom: env(safe-area-inset-bottom);
         }
-        .tab-item { display: flex; flex-direction: column; align-items: center; font-size: 11px; color: var(--text-sub); gap: 6px; }
-        .tab-item.active { color: #fff; }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-item { display: flex; flex-direction: column; align-items: center; color: var(--text-low); text-decoration: none; font-size: 10px; gap: 4px; }
+        .tab-item.active { color: white; }
+        .tab-item svg { width: 24px; height: 24px; fill: currentColor; }
     </style>
 </head>
 <body>
 
-    <nav class="app-bar">
-        <div class="brand-logo"><span>▶</span> Lamoniê Flow</div>
+    <div id="loader"><div class="spinner"></div><p style="margin-top: 15px; font-size: 14px; color: #666;">Lamoniê Flow 5.0</p></div>
+
+    <header>
+        <div class="logo">
+            <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+            Lamoniê <span>Flow</span>
+        </div>
         <div style="display: flex; gap: 20px;">
             <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <div class="v-avatar" style="width: 28px; height: 28px; font-size: 12px; background: #004d40;">B</div>
+            <div class="chan-img" style="width: 30px; height: 30px; font-size: 12px; background: #004d40;">B</div>
         </div>
-    </nav>
+    </header>
 
-    <main class="feed-container" id="video-feed"></main>
+    <div class="categories">
+        <div class="chip active">Tudo</div>
+        <div class="chip">Forró & Sanfona</div>
+        <div class="chip">Piseiro 2026</div>
+        <div class="chip">Programação</div>
+        <div class="chip">Natureza</div>
+    </div>
+
+    <main class="feed" id="main-feed"></main>
 
     <div id="player-overlay">
-        <div class="player-header" onclick="closePlayer()">
-            <span class="close-icon">✕</span>
-            <span>Premium Player Mode</span>
+        <div class="player-bar">
+            <span style="font-size: 24px;" onclick="closeEngine()">✕</span>
+            <span style="font-size: 14px; font-weight: 500;">REPRODUZINDO AGORA</span>
+            <span style="font-size: 18px;">⋮</span>
         </div>
-        <div class="player-body">
-            <div id="yt-api-player"></div>
+        <div class="player-content">
+            <div id="api-frame-holder">
+                <div id="yt-core-player"></div>
+            </div>
         </div>
-        <div class="video-meta-box">
-            <div class="status-pill">SINAL PREMIUM ATIVO</div>
-            <h2 id="p-title" style="margin-bottom: 10px;">Título do Vídeo</h2>
-            <p id="p-chan" style="color: #aaa; font-size: 14px;"></p>
+        <div class="player-info">
+            <div class="premium-tag">NO-ADS PREMIUM ENGINE</div>
+            <h2 id="p-title" style="font-size: 19px; line-height: 1.3; margin-bottom: 8px;"></h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <p id="p-meta" style="color: var(--text-med); font-size: 13px;"></p>
+                <button style="background: white; color: black; border: none; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 12px;">INSCREVER-SE</button>
+            </div>
+            <div style="border-top: 1px solid var(--border); padding-top: 20px;">
+                <p style="font-weight: 500; margin-bottom: 15px;">Comentários <span style="color: #aaa; font-weight: 400; font-size: 13px;"> 452</span></p>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <div class="chan-img" style="width: 24px; height: 24px; font-size: 10px;">B</div>
+                    <div style="background: #222; flex: 1; padding: 8px; border-radius: 15px; font-size: 12px; color: #aaa;">Adicionar comentário...</div>
+                </div>
+            </div>
         </div>
     </div>
 
     <nav class="tab-bar">
-        <div class="tab-item active">🏠<span>Home</span></div>
-        <div class="tab-item">⚡<span>Shorts</span></div>
-        <div style="font-size: 30px; font-weight: 200;">⊕</div>
-        <div class="tab-item">📺<span>Subs</span></div>
-        <div class="tab-item">📚<span>Lib</span></div>
+        <div class="tab-item active"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Home</div>
+        <div class="tab-item"><svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>Shorts</div>
+        <div style="font-size: 32px; font-weight: 200;">⊕</div>
+        <div class="tab-item"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>Subs</div>
+        <div class="tab-item"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>Lib</div>
     </nav>
 
     <script src="https://www.youtube.com/iframe_api"></script>
-
     <script>
-        // LISTA DE VÍDEOS REAIS
-        const myVideos = [
-            { id: "5U7bE06_z7I", title: "O Melhor do Piseiro 2026 - Bibiu Galdino", channel: "Lamoniê Music", views: "1.2M", time: "3 dias" },
-            { id: "4YmXW7XF66o", title: "Desenvolvimento de Apps com Replit", channel: "Dev Pro", views: "250k", time: "1 mês" },
-            { id: "jfKfPfyJRdk", title: "Natureza Relaxante 8K Ultra HD", channel: "Cinematic World", views: "5.4M", time: "2 semanas" },
-            { id: "dQw4w9WgXcQ", title: "Video de Teste Premium", channel: "System", views: "1.5B", time: "12 anos" }
+        const db = [
+            { id: "5U7bE06_z7I", t: "O Melhor do Piseiro e Sanfona 2026 - Bibiu Galdino", c: "Lamoniê Records", v: "2.4M", d: "12:45" },
+            { id: "4YmXW7XF66o", t: "Como Criar um App de Vídeos Profissional no Replit", c: "Dev Master BR", v: "150k", d: "45:10" },
+            { id: "jfKfPfyJRdk", t: "Natureza Relaxante 8K - Paisagens do Mundo", c: "8K Cinematic", v: "10M", d: "08:00" },
+            { id: "dQw4w9WgXcQ", t: "Video de Teste Premium - No Ads Engine", c: "System", v: "1.5B", d: "03:33" },
+            { id: "5U7bE06_z7I", t: "Forró de Elite | Especial Jaíbaras 2026", c: "Bibiu Galdino", v: "500k", d: "22:15" }
         ];
 
-        let ytPlayer;
+        let player;
 
-        // Renderizar o Feed
-        function renderFeed() {
-            const feed = document.getElementById('video-feed');
-            myVideos.forEach(v => {
+        // Renderizador de Feed Dinâmico
+        function buildFeed() {
+            const feed = document.getElementById('main-feed');
+            db.forEach((item, index) => {
                 const card = document.createElement('div');
-                card.className = 'v-card';
-                card.onclick = () => openPlayer(v.id, v.title, v.channel);
+                card.className = 'video-card';
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.onclick = () => openEngine(item);
                 card.innerHTML = `
-                    <div class="v-thumbnail">
-                        <img src="https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg" onerror="this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg'">
+                    <div class="thumb-container">
+                        <img src="https://i.ytimg.com/vi/${item.id}/maxresdefault.jpg" onerror="this.src='https://i.ytimg.com/vi/${item.id}/hqdefault.jpg'">
+                        <span class="v-time">${item.d}</span>
                     </div>
-                    <div class="v-details">
-                        <div class="v-avatar">B</div>
-                        <div class="v-info">
-                            <h3 class="v-title">${v.title}</h3>
-                            <div class="v-stats">${v.channel} • ${v.views} views • ${v.time}</div>
+                    <div class="v-data">
+                        <div class="chan-img">${item.c.charAt(0)}</div>
+                        <div class="v-text">
+                            <h3 class="v-title">${item.t}</h3>
+                            <div class="v-meta">${item.c} • ${item.v} views • há 2 dias</div>
                         </div>
                     </div>
                 `;
                 feed.appendChild(card);
             });
+            
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+            }, 1000);
         }
 
-        // Iniciar API do YouTube
+        // Motor do Player (YouTube IFrame API)
         function onYouTubeIframeAPIReady() {
-            ytPlayer = new YT.Player('yt-api-player', {
-                height: '100%',
-                width: '100%',
+            player = new YT.Player('yt-core-player', {
+                height: '100%', width: '100%',
                 playerVars: {
-                    'autoplay': 0,
-                    'controls': 1,
-                    'modestbranding': 1,
-                    'rel': 0,
-                    'origin': window.location.origin
-                }
+                    'autoplay': 0, 'controls': 1, 'modestbranding': 1,
+                    'rel': 0, 'showinfo': 0, 'iv_load_policy': 3, 'cc_load_policy': 0
+                },
+                events: { 'onStateChange': onPlayerStateChange }
             });
         }
 
-        function openPlayer(id, title, channel) {
-            document.getElementById('player-overlay').classList.add('active');
-            document.getElementById('p-title').innerText = title;
-            document.getElementById('p-chan').innerText = channel;
+        function onPlayerStateChange(event) {
+            // Lógica para detectar fim de vídeo ou erros
+            if (event.data == YT.PlayerState.ENDED) {
+                console.log("Vídeo terminou. Sugerindo próximo...");
+            }
+        }
+
+        function openEngine(video) {
+            const overlay = document.getElementById('player-overlay');
+            document.getElementById('p-title').innerText = video.t;
+            document.getElementById('p-meta').innerText = `${video.c} • ${video.v} visualizações • 2026`;
             
-            if (ytPlayer && ytPlayer.loadVideoById) {
-                ytPlayer.loadVideoById(id);
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('open'), 10);
+            
+            if (player && player.loadVideoById) {
+                player.loadVideoById(video.id);
             }
             document.body.style.overflow = 'hidden';
         }
 
-        function closePlayer() {
-            document.getElementById('player-overlay').classList.remove('active');
-            if (ytPlayer && ytPlayer.stopVideo) {
-                ytPlayer.stopVideo();
-            }
-            document.body.style.overflow = 'auto';
+        function closeEngine() {
+            const overlay = document.getElementById('player-overlay');
+            overlay.classList.remove('open');
+            if (player && player.stopVideo) player.stopVideo();
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }, 400);
         }
 
-        window.onload = renderFeed;
+        window.onload = buildFeed;
     </script>
 </body>
 </html>
