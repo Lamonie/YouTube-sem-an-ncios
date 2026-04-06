@@ -2,192 +2,120 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Lamoniê Flow | Ultra Engine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Monet Vídeos - Pro</title>
     <style>
-        :root {
-            --yt-red: #ff0000;
-            --bg: #0f0f0f;
-            --surface: #1e1e1e;
-            --text: #ffffff;
-            --dim: #aaaaaa;
-        }
+        :root { --bg: #0f0f0f; --surface: #222; --accent: #ff0000; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+        body { background: var(--bg); color: #fff; padding-bottom: 180px; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; padding-bottom: 120px; }
-
-        /* HEADER PROFISSIONAL */
-        header {
-            position: sticky; top: 0; background: rgba(15, 15, 15, 0.98);
-            padding: 15px; z-index: 1000; border-bottom: 1px solid #222;
-            display: flex; align-items: center; justify-content: space-between;
-        }
-        .logo { font-size: 20px; font-weight: bold; letter-spacing: -1px; }
-        .logo span { color: var(--yt-red); }
-
-        /* BUSCA */
-        .search-box { display: flex; padding: 10px; gap: 10px; background: var(--bg); }
-        .search-box input {
-            flex: 1; padding: 12px 20px; border-radius: 25px; border: none;
-            background: var(--surface); color: #fff; font-size: 14px;
-        }
-
-        /* CATEGORIAS DINÂMICAS */
-        .cats { display: flex; overflow-x: auto; gap: 10px; padding: 10px; white-space: nowrap; }
-        .cats::-webkit-scrollbar { display: none; }
-        .cat {
-            padding: 8px 16px; background: var(--surface); border-radius: 20px;
-            font-size: 14px; cursor: pointer; transition: 0.3s;
-        }
-        .cat.active { background: #fff; color: #000; font-weight: bold; }
-
-        /* FEED DE VÍDEOS */
-        .feed { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 10px; }
-        .card { width: 100%; cursor: pointer; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        header { padding: 20px; font-size: 20px; font-weight: bold; border-bottom: 1px solid #333; }
         
-        .thumb-container { width: 100%; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: #222; position: relative; }
-        .thumb-container img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .v-info { display: flex; gap: 12px; padding: 12px 5px; }
-        .v-avatar { width: 36px; height: 36px; border-radius: 50%; background: #333; flex-shrink: 0; }
-        .v-text { flex: 1; }
-        .v-title { font-size: 15px; font-weight: 500; line-height: 1.4; margin-bottom: 4px; }
-        .v-stats { font-size: 12px; color: var(--dim); }
+        .search-container { padding: 15px; display: flex; gap: 10px; }
+        #busca { flex: 1; padding: 12px; border-radius: 25px; border: none; background: var(--surface); color: #fff; }
 
-        /* MINI PLAYER ULTRA (O MOTOR QUE ABRE O VÍDEO) */
-        .mini-player {
+        .feed { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 15px; }
+        .card { cursor: pointer; background: #1a1a1a; border-radius: 12px; overflow: hidden; }
+        .thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #333; }
+        .card-info { padding: 12px; }
+        .title { font-size: 15px; font-weight: 500; line-height: 1.4; }
+
+        /* PLAYER FIXO EMBAIXO */
+        .player-container {
             position: fixed; bottom: 0; width: 100%; background: #000;
-            z-index: 2000; display: none; border-top: 1px solid #333;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            border-top: 2px solid #333; z-index: 1000; display: none;
         }
-        .mini-player.active { display: block; }
-        
-        #yt-iframe { width: 100%; aspect-ratio: 16/9; border: none; background: #000; }
-        
-        .p-controls {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 15px; background: #111;
-        }
-        .p-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%; }
-        .p-close { font-size: 20px; cursor: pointer; color: var(--yt-red); padding: 5px; }
-
+        .player-active { display: block; }
+        .video-wrapper { width: 100%; aspect-ratio: 16/9; }
+        .controls { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .close-btn { color: var(--accent); font-weight: bold; cursor: pointer; font-size: 20px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">Lamoniê <span>Flow</span></div>
-        <div style="font-size: 12px; color: var(--dim);">Bibiu Galdino Ed.</div>
-    </header>
+<header>Monet Vídeos</header>
 
-    <div class="search-box">
-        <input id="input-busca" placeholder="O que você quer ouvir hoje?" onkeyup="if(event.key==='Enter') realizarBusca()">
+<div class="search-container">
+    <input type="text" id="busca" placeholder="Pesquisar vídeos...">
+</div>
+
+<div class="feed" id="feed">
     </div>
 
-    <div class="cats" id="cats-container"></div>
-
-    <div class="feed" id="video-feed">
-        </div>
-
-    <div class="mini-player" id="main-player">
-        <iframe id="yt-iframe" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-        <div class="p-controls">
-            <span class="p-title" id="player-title">Nenhum vídeo tocando</span>
-            <span class="p-close" onclick="fecharPlayer()">✕</span>
-        </div>
+<div class="player-container" id="container-player">
+    <div class="video-wrapper">
+        <div id="player-youtube"></div>
     </div>
+    <div class="controls">
+        <span id="v-titulo-atual">Tocando agora...</span>
+        <span class="close-btn" onclick="fecharPlayer()">✖</span>
+    </div>
+</div>
 
-    <script>
-        // BANCO DE DADOS LOCAL (Caso a API falhe, o app nunca fica vazio)
-        const videosIniciais = [
-            { id: "5U7bE06_z7I", title: "Piseiro e Sanfona 2026 - Bibiu Galdino", views: "2.4M" },
-            { id: "jfKfPfyJRdk", title: "Natureza Relaxante 8K HDR", views: "10M" },
-            { id: "dQw4w9WgXcQ", title: "Video de Teste Premium Flow", views: "1.5B" },
-            { id: "4YmXW7XF66o", title: "Como Criar Apps no Replit", views: "150k" }
-        ];
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+    // Banco de dados de vídeos (Como a API Key é instável, usamos essa lista ultra-rápida)
+    const listaVideos = [
+        { id: "jfKfPfyJRdk", title: "Natureza Relaxante 8K Ultra HD" },
+        { id: "5U7bE06_z7I", title: "Piseiro e Sanfona 2026 - Lançamentos" },
+        { id: "4YmXW7XF66o", title: "Desenvolvimento de Apps Profissionais" },
+        { id: "dQw4w9WgXcQ", title: "Rick Astley - Never Gonna Give You Up" }
+    ];
 
-        const categorias = ["Tudo", "Forró", "Piseiro", "Sanfona", "Música", "Podcasts", "Notícias"];
+    let player;
 
-        // 1. INICIALIZAR CATEGORIAS
-        function initCats() {
-            const container = document.getElementById('cats-container');
-            categorias.forEach(cat => {
-                const div = document.createElement('div');
-                div.className = `cat ${cat === 'Tudo' ? 'active' : ''}`;
-                div.innerText = cat;
-                div.onclick = () => {
-                    document.querySelectorAll('.cat').forEach(c => c.classList.remove('active'));
-                    div.classList.add('active');
-                    if(cat === "Tudo") renderFeed(videosIniciais);
-                    else alert("Buscando por: " + cat);
-                };
-                container.appendChild(div);
-            });
-        }
+    // Inicializa o Feed
+    function carregarFeed() {
+        const feed = document.getElementById('feed');
+        feed.innerHTML = "";
+        
+        listaVideos.forEach(v => {
+            const card = document.createElement('div');
+            card.className = "card";
+            card.onclick = () => abrirVideo(v.id, v.title);
+            card.innerHTML = `
+                <img class="thumb" src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg">
+                <div class="card-info">
+                    <div class="title">${v.title}</div>
+                </div>
+            `;
+            feed.appendChild(card);
+        });
+    }
 
-        // 2. RENDERIZAR FEED (CORRIGIDO)
-        function renderFeed(lista) {
-            const feed = document.getElementById('video-feed');
-            feed.innerHTML = ""; // Limpa o feed anterior
-            
-            lista.forEach(v => {
-                const card = document.createElement('div');
-                card.className = "card";
-                card.onclick = () => abrirVideo(v.id, v.title);
-                
-                card.innerHTML = `
-                    <div class="thumb-container">
-                        <img src="https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg" onerror="this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg'">
-                    </div>
-                    <div class="v-info">
-                        <div class="v-avatar" style="background: hsl(${Math.random()*360}, 70%, 50%)"></div>
-                        <div class="v-text">
-                            <div class="v-title">${v.title}</div>
-                            <div class="v-stats">Lamoniê Flow • ${v.views} views • há 2 dias</div>
-                        </div>
-                    </div>
-                `;
-                feed.appendChild(card);
-            });
-        }
-
-        // 3. ABRIR VÍDEO (AGORA FUNCIONA!)
-        function abrirVideo(id, titulo) {
-            const player = document.getElementById('main-player');
-            const iframe = document.getElementById('yt-iframe');
-            const titleLabel = document.getElementById('player-title');
-
-            // Formata a URL para modo Embed que o YouTube aceita
-            iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0&showinfo=0&modestbranding=1`;
-            titleLabel.innerText = titulo;
-            
-            player.classList.add('active');
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
-
-        // 4. FECHAR PLAYER
-        function fecharPlayer() {
-            const player = document.getElementById('main-player');
-            const iframe = document.getElementById('yt-iframe');
-            iframe.src = "";
-            player.classList.remove('active');
-        }
-
-        // 5. SIMULAR BUSCA
-        function realizarBusca() {
-            const termo = document.getElementById('input-busca').value;
-            if(termo.length > 2) {
-                // Aqui você pode integrar com o seu sistema de busca real
-                console.log("Buscando: " + termo);
+    // API do YouTube
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player-youtube', {
+            height: '100%',
+            width: '100%',
+            playerVars: { 'autoplay': 1, 'modestbranding': 1, 'rel': 0 },
+            events: {
+                'onReady': () => console.log("Player pronto")
             }
-        }
+        });
+    }
 
-        // BOOT
-        window.onload = () => {
-            initCats();
-            renderFeed(videosIniciais);
-        };
-    </script>
+    function abrirVideo(id, titulo) {
+        const container = document.getElementById('container-player');
+        document.getElementById('v-titulo-atual').innerText = titulo;
+        
+        container.classList.add('player-active');
+        
+        if (player && player.loadVideoById) {
+            player.loadVideoById(id);
+        }
+        
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function fecharPlayer() {
+        const container = document.getElementById('container-player');
+        container.classList.remove('player-active');
+        if (player && player.stopVideo) player.stopVideo();
+    }
+
+    window.onload = carregarFeed;
+</script>
+
 </body>
 </html>
