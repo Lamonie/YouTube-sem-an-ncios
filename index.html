@@ -3,263 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Lamoniê Flow | Ultra Engine 5K</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-
+    <title>Lamoniê Flow | Ultra Engine v7.0</title>
+    
     <style>
-        /* SISTEMA DE DESIGN ULTRA-ROBUSTO 
-           Este CSS foi construído para simular o comportamento de apps nativos de iOS/Android.
-        */
         :root {
+            --ios-blue: #007aff;
+            --yt-red: #ff0000;
             --bg-ultra: #000000;
-            --bg-panel: #0f0f0f;
-            --bg-card: #1a1a1a;
-            --primary: #ff0000;
-            --accent-blue: #007aff;
-            --text-main: #ffffff;
-            --text-dim: #aaaaaa;
-            --glass: rgba(255, 255, 255, 0.08);
-            --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
-            --transition-speed: 0.4s;
+            --surface: #121212;
+            --text: #ffffff;
+            --text-dim: #888888;
+            --safe-area: env(safe-area-inset-bottom);
         }
 
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
-            -webkit-font-smoothing: antialiased;
-            -webkit-tap-highlight-color: transparent;
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+        body { background: var(--bg-ultra); color: var(--text); overflow-x: hidden; height: 100vh; }
+
+        /* HEADER FIXO */
+        .header {
+            position: fixed; top: 0; width: 100%; height: 60px;
+            background: rgba(0,0,0,0.9); backdrop-filter: blur(20px);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; z-index: 1000; border-bottom: 1px solid #222;
         }
 
-        body {
-            background-color: var(--bg-ultra);
-            color: var(--text-main);
-            font-family: 'Roboto', sans-serif;
-            overflow: hidden; /* Controlado pelo scroll interno para evitar bounce de browser */
-            height: 100vh;
-            width: 100vw;
-        }
+        .logo { font-weight: 800; font-size: 22px; letter-spacing: -1px; }
+        .logo span { color: var(--yt-red); }
 
-        /* --- CAMADA DE BOOT (SISTEMA DE CARREGAMENTO) --- */
-        #os-boot {
+        /* CONTAINER DE CONTEÚDO */
+        .app-content { padding-top: 70px; padding-bottom: 100px; height: 100vh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+        /* CARDS DE VÍDEO (ESTRUTURA DE ALTA FIDELIDADE) */
+        .v-item { width: 100%; margin-bottom: 15px; background: var(--surface); transition: transform 0.2s; cursor: pointer; }
+        .v-item:active { transform: scale(0.98); }
+        .v-cover { width: 100%; aspect-ratio: 16/9; position: relative; background: #1a1a1a; }
+        .v-cover img { width: 100%; height: 100%; object-fit: cover; }
+        .v-duration { position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        
+        .v-meta { display: flex; padding: 15px; gap: 15px; }
+        .v-avatar { width: 40px; height: 40px; border-radius: 50%; background: #333; flex-shrink: 0; }
+        .v-details { flex: 1; }
+        .v-title { font-size: 16px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
+        .v-info { font-size: 13px; color: var(--text-dim); }
+
+        /* O PLAYER "COLOSSAL" (RESOLVIDO) */
+        #ultra-modal {
             position: fixed; inset: 0; background: var(--bg-ultra);
-            z-index: 10000; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 5000; display: none; flex-direction: column;
+            transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
-        .boot-logo { width: 80px; height: 80px; margin-bottom: 20px; animation: pulse 2s infinite; }
-        .boot-progress { width: 200px; height: 2px; background: #333; position: relative; border-radius: 2px; }
-        .boot-bar { width: 0%; height: 100%; background: var(--primary); transition: width 0.3s; }
+        #ultra-modal.active { display: flex; transform: translateY(0); }
 
-        @keyframes pulse { 0% { opacity: 0.5; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1); } 100% { opacity: 0.5; transform: scale(0.95); } }
+        .modal-nav { height: 60px; display: flex; align-items: center; padding: 0 20px; background: #111; justify-content: space-between; }
+        .close-trigger { font-size: 30px; font-weight: 200; cursor: pointer; color: var(--ios-blue); }
 
-        /* --- ESTRUTURA DE LAYOUT (FRAMEWORK INTERNO) --- */
-        .app-shell {
-            display: grid;
-            grid-template-rows: auto 1fr auto;
-            height: 100vh;
-            width: 100%;
+        .video-engine-box { width: 100%; aspect-ratio: 16/9; background: #000; }
+        .video-data-box { padding: 20px; flex: 1; overflow-y: auto; background: var(--bg-ultra); }
+        .p-badge { background: var(--yt-red); padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-bottom: 15px; display: inline-block; }
+
+        /* TAB BAR (BOTÕES QUE AGORA OBEDECEM) */
+        .tab-bar {
+            position: fixed; bottom: 0; width: 100%; height: calc(70px + var(--safe-area));
+            background: rgba(10,10,10,0.98); backdrop-filter: blur(25px);
+            border-top: 1px solid #222; display: flex; justify-content: space-around;
+            padding-bottom: var(--safe-area); z-index: 2000;
         }
+        .tab-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dim); gap: 5px; font-size: 10px; flex: 1; }
+        .tab-btn.active { color: white; }
+        .tab-btn svg { width: 24px; height: 24px; fill: currentColor; }
 
-        .ultra-header {
-            padding-top: var(--safe-top);
-            background: rgba(15, 15, 15, 0.95);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            z-index: 5000; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .nav-content { height: 56px; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
-        .brand-box { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 20px; letter-spacing: -1px; }
-        .brand-box span { color: var(--primary); }
+        /* BOTÃO CENTRAL DE AÇÃO */
+        .btn-plus { width: 45px; height: 45px; border: 1px solid #444; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 200; margin-top: 5px; }
 
-        /* --- FEED ENGINE (SCROLL DE ALTA PERFORMANCE) --- */
-        .main-viewport {
-            overflow-y: auto;
-            overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
-            padding-bottom: 20px;
-        }
-
-        .category-scroller {
-            display: flex; gap: 10px; padding: 15px 16px;
-            overflow-x: auto; white-space: nowrap;
-        }
-        .category-scroller::-webkit-scrollbar { display: none; }
-        .tag {
-            background: #282828; color: white; padding: 8px 16px;
-            border-radius: 8px; font-size: 14px; font-weight: 500;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .tag.active { background: white; color: black; }
-
-        .video-grid { display: flex; flex-direction: column; gap: 4px; }
-        .ultra-card { width: 100%; background: var(--bg-ultra); position: relative; }
-        
-        .media-box { width: 100%; aspect-ratio: 16/9; background: #111; position: relative; }
-        .media-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
-        .duration { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; }
-
-        .meta-box { display: flex; padding: 12px 16px; gap: 12px; }
-        .avatar-circle { width: 36px; height: 36px; border-radius: 50%; background: #333; overflow: hidden; }
-        .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .info-stack { flex: 1; }
-        .video-title { font-size: 15px; font-weight: 500; line-height: 1.4; color: #fff; margin-bottom: 4px; }
-        .video-sub { font-size: 12px; color: var(--text-dim); }
-
-        /* --- PLAYER INTERFACE (NÍVEL CINEMATOGRÁFICO) --- */
-        #ultra-player {
-            position: fixed; inset: 0; background: var(--bg-ultra);
-            z-index: 9999; display: none; flex-direction: column;
-            transform: translateY(100%); transition: transform var(--transition-speed) cubic-bezier(0.19, 1, 0.22, 1);
-        }
-        #ultra-player.active { display: flex; transform: translateY(0); }
-
-        .p-header { height: 50px; display: flex; align-items: center; padding: 0 16px; background: #000; }
-        .p-video-area { width: 100%; background: #000; position: sticky; top: 0; z-index: 10; }
-        #player-engine-mount { width: 100%; aspect-ratio: 16/9; }
-
-        .p-details { padding: 20px; flex: 1; overflow-y: auto; background: var(--bg-panel); border-radius: 24px 24px 0 0; }
-        .p-title { font-size: 18px; font-weight: 700; margin-bottom: 12px; line-height: 1.3; }
-        
-        .p-stats-bar { display: flex; gap: 15px; margin-bottom: 20px; }
-        .stat-pill { background: var(--glass); padding: 8px 15px; border-radius: 20px; font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 5px; }
-
-        /* --- NAVIGATION BAR (ESTILO IPHONE) --- */
-        .ultra-tabs {
-            background: rgba(15,15,15,0.98);
-            border-top: 1px solid rgba(255,255,255,0.05);
-            height: calc(65px + var(--safe-bottom));
-            display: flex; justify-content: space-around; align-items: center;
-            padding-bottom: var(--safe-bottom);
-        }
-        .tab-link { color: var(--text-dim); text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; font-weight: 500; }
-        .tab-link.active { color: #fff; }
-        .tab-link svg { width: 24px; height: 24px; }
     </style>
 </head>
 <body>
 
-    <div id="os-boot">
-        <div class="boot-logo"><svg viewBox="0 0 24 24" fill="red"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg></div>
-        <div class="boot-progress"><div class="boot-bar" id="load-bar"></div></div>
+    <header class="header">
+        <div class="logo">Lamoniê <span>Flow</span></div>
+        <div style="display: flex; gap: 20px;">
+            <span>🔍</span>
+            <div class="v-avatar" style="width: 28px; height: 28px; background: #004d40;"></div>
+        </div>
+    </header>
+
+    <main class="app-content" id="feed-mount"></main>
+
+    <div id="ultra-modal">
+        <div class="modal-nav">
+            <span class="close-trigger" onclick="killPlayer()">✕</span>
+            <span style="font-weight: 600; font-size: 14px;">MODO PREMIUM</span>
+            <span>⋮</span>
+        </div>
+        <div class="video-engine-box">
+            <div id="yt-core-iframe"></div>
+        </div>
+        <div class="video-data-box">
+            <span class="p-badge">SINAL ULTRA HD</span>
+            <h1 id="p-title" style="font-size: 20px; margin-bottom: 10px;"></h1>
+            <p id="p-stats" style="color: var(--text-dim); font-size: 13px;"></p>
+            <div style="margin-top: 30px; height: 1px; background: #222;"></div>
+            </div>
     </div>
 
-    <div class="app-shell">
-        <header class="ultra-header">
-            <div class="nav-content">
-                <div class="brand-box"><span>▶</span> Lamoniê Flow</div>
-                <div style="display: flex; gap: 20px;">
-                    <svg width="24" height="24" fill="white" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                    <div class="avatar-circle" style="width: 30px; height: 30px; background: #004d40; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">B</div>
-                </div>
-            </div>
-            <div class="category-scroller">
-                <div class="tag active">Tudo</div>
-                <div class="tag">Forró 2026</div>
-                <div class="tag">Sanfona</div>
-                <div class="tag">Ao Vivo</div>
-                <div class="tag">Piseiro</div>
-                <div class="tag">Mixes</div>
-                <div class="tag">Novidades</div>
-            </div>
-        </header>
-
-        <main class="main-viewport">
-            <div class="video-grid" id="ultra-feed-mount">
-                </div>
-        </main>
-
-        <nav class="ultra-tabs">
-            <a href="#" class="tab-link active"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>Início</a>
-            <a href="#" class="tab-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>Shorts</a>
-            <div style="font-size: 30px; font-weight: 300;">⊕</div>
-            <a href="#" class="tab-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>Subs</a>
-            <a href="#" class="tab-link"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/></svg>Você</a>
-        </nav>
-    </div>
-
-    <div id="ultra-player">
-        <div class="p-header">
-            <span style="font-size: 28px; font-weight: 300;" onclick="closeUltraPlayer()">⌄</span>
+    <nav class="tab-bar">
+        <div class="tab-btn active" onclick="console.log('Home clicada')">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Início
         </div>
-        <div class="p-video-area">
-            <div id="player-engine-mount"></div>
+        <div class="tab-btn">
+            <svg viewBox="0 0 24 24"><path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z"/></svg>
+            Shorts
         </div>
-        <div class="p-details">
-            <h1 class="p-title" id="display-title">Título do Vídeo</h1>
-            <div class="p-stats-bar">
-                <div class="stat-pill">1.2M visualizações</div>
-                <div class="stat-pill">há 3 dias</div>
-                <div class="stat-pill" style="background: white; color: black;">Inscrever-se</div>
-            </div>
-            <div style="background: var(--glass); padding: 15px; border-radius: 15px;">
-                <p style="font-size: 13px; color: #fff; font-weight: 500;">Comentários</p>
-                <p style="font-size: 12px; color: var(--text-dim); margin-top: 5px;">Este vídeo tem o sinal Premium ativo.</p>
-            </div>
-            <div style="margin-top: 20px; height: 1000px; border-top: 1px solid var(--glass);"></div>
+        <div class="btn-plus">+</div>
+        <div class="tab-btn">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>
+            Subs
         </div>
-    </div>
+        <div class="tab-btn">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+            Biblioteca
+        </div>
+    </nav>
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        /**
-         * LAMONIÊ FLOW - CORE ENGINE
-         * Esta é a lógica de gerenciamento de dados e interface.
-         */
-        const VIDEO_DATABASE = [
-            { id: "5U7bE06_z7I", title: "O Melhor do Piseiro 2026 - Especial Bibiu Galdino", channel: "Lamoniê Music", views: "2.4M", dur: "12:45" },
-            { id: "4YmXW7XF66o", title: "Curso de Programação com Replit Pro", channel: "Dev Master", views: "150k", dur: "45:10" },
-            { id: "jfKfPfyJRdk", title: "Natureza Relaxante em 8K HDR", channel: "Cinematic World", views: "10M", dur: "08:22" },
-            { id: "dQw4w9WgXcQ", title: "Rick Astley - Never Gonna Give You Up (Premium)", channel: "Vevo", views: "1.5B", dur: "03:32" },
-            { id: "5U7bE06_z7I", title: "Forró de Elite | Jaíbaras No Topo", channel: "Bibiu Galdino", views: "800k", dur: "30:00" }
+        // BANCO DE DADOS DINÂMICO
+        const videos = [
+            { id: "5U7bE06_z7I", title: "O Melhor do Piseiro e Sanfona 2026 - Bibiu Galdino", views: "2.5M", time: "15:40" },
+            { id: "4YmXW7XF66o", title: "Como Criar Apps Profissionais (Tutorial Ultra)", views: "180k", time: "42:10" },
+            { id: "jfKfPfyJRdk", title: "Natureza Relaxante 8K Ultra HD", views: "12M", time: "10:00" },
+            { id: "dQw4w9WgXcQ", title: "Never Gonna Give You Up - HD", views: "1.5B", time: "03:32" }
         ];
 
-        let playerCore;
-        let isBooted = false;
+        let player;
+        let isPlayerReady = false;
 
-        // SISTEMA DE BOOT (Simula carregamento de sistema operacional)
-        function initBoot() {
-            const bar = document.getElementById('load-bar');
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 20;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    completeBoot();
-                }
-                bar.style.width = progress + '%';
-            }, 100);
-        }
-
-        function completeBoot() {
-            document.getElementById('os-boot').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('os-boot').style.display = 'none';
-                renderFeed();
-            }, 800);
-        }
-
-        // ENGINE DE RENDERIZAÇÃO DO FEED
-        function renderFeed() {
-            const mount = document.getElementById('ultra-feed-mount');
-            VIDEO_DATABASE.forEach(v => {
+        // Função que monta o feed e garante que os botões funcionem
+        function initApp() {
+            const mount = document.getElementById('feed-mount');
+            videos.forEach(v => {
                 const card = document.createElement('div');
-                card.className = 'ultra-card';
-                card.onclick = () => launchPlayer(v);
+                card.className = 'v-item';
+                // O segredo está aqui: o clique dispara a função e gerencia o estado
+                card.onclick = () => launchVideo(v);
                 card.innerHTML = `
-                    <div class="media-box">
+                    <div class="v-cover">
                         <img src="https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg" onerror="this.src='https://i.ytimg.com/vi/${v.id}/hqdefault.jpg'">
-                        <span class="duration">${v.dur}</span>
+                        <div class="v-duration">${v.time}</div>
                     </div>
-                    <div class="meta-box">
-                        <div class="avatar-circle"><img src="https://ui-avatars.com/api/?name=${v.channel}&background=random"></div>
-                        <div class="info-stack">
-                            <h3 class="video-title">${v.title}</h3>
-                            <p class="video-sub">${v.channel} • ${v.views} views • há 2 dias</p>
+                    <div class="v-meta">
+                        <div class="v-avatar"></div>
+                        <div class="v-details">
+                            <h3 class="v-title">${v.title}</h3>
+                            <p class="v-info">Lamoniê Flow • ${v.views} visualizações • há 2 dias</p>
                         </div>
                     </div>
                 `;
@@ -267,44 +165,48 @@
             });
         }
 
-        // API INTEGRATION (O MOTOR DO YOUTUBE)
+        // API DO YOUTUBE
         function onYouTubeIframeAPIReady() {
-            playerCore = new YT.Player('player-engine-mount', {
-                height: '100%', width: '100%',
-                playerVars: {
-                    'autoplay': 0, 'controls': 1, 'modestbranding': 1,
-                    'rel': 0, 'showinfo': 0, 'iv_load_policy': 3
+            player = new YT.Player('yt-core-iframe', {
+                height: '100%',
+                width: '100%',
+                playerVars: { 'autoplay': 0, 'controls': 1, 'modestbranding': 1, 'rel': 0 },
+                events: {
+                    'onReady': () => { isPlayerReady = true; }
                 }
             });
         }
 
-        function launchPlayer(video) {
-            const overlay = document.getElementById('ultra-player');
-            document.getElementById('display-title').innerText = video.title;
+        function launchVideo(v) {
+            const modal = document.getElementById('ultra-modal');
+            document.getElementById('p-title').innerText = v.title;
+            document.getElementById('p-stats').innerText = `${v.views} views • Canal Oficial`;
             
-            overlay.style.display = 'flex';
-            setTimeout(() => overlay.classList.add('active'), 10);
+            modal.style.display = 'flex';
+            // Delay pequeno para a animação do iPhone (slide up)
+            setTimeout(() => modal.classList.add('active'), 10);
             
-            if (playerCore && playerCore.loadVideoById) {
-                playerCore.loadVideoById(video.id);
+            if (isPlayerReady) {
+                player.loadVideoById(v.id);
             }
-            // Bloqueia scroll do fundo
-            document.body.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden'; // Trava o scroll do fundo
         }
 
-        function closeUltraPlayer() {
-            const overlay = document.getElementById('ultra-player');
-            overlay.classList.remove('active');
-            if (playerCore && playerCore.stopVideo) playerCore.stopVideo();
+        function killPlayer() {
+            const modal = document.getElementById('ultra-modal');
+            modal.classList.remove('active');
             
+            if (player && player.stopVideo) {
+                player.stopVideo();
+            }
+
             setTimeout(() => {
-                overlay.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }, 400);
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto'; // Destrava o scroll
+            }, 500);
         }
 
-        // STARTUP
-        window.onload = initBoot;
+        window.onload = initApp;
     </script>
 </body>
 </html>
