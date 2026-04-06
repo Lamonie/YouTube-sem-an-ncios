@@ -9,17 +9,9 @@
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(270deg, #000, #111, #1a1a1a);
-    background-size: 600% 600%;
-    animation: bg 12s ease infinite;
+    background: black;
     color: white;
     text-align: center;
-}
-
-@keyframes bg {
-    0% {background-position:0% 50%;}
-    50% {background-position:100% 50%;}
-    100% {background-position:0% 50%;}
 }
 
 h1 { margin: 20px; }
@@ -39,13 +31,11 @@ button {
     background: red;
     color: white;
     font-weight: bold;
-    cursor: pointer;
 }
 
 iframe {
     width: 90%;
     height: 400px;
-    border: none;
     border-radius: 15px;
     margin-top: 20px;
 }
@@ -54,18 +44,26 @@ iframe {
 
 <body>
 
-<h1>🔥 PLAYER PRO SIMPLES</h1>
+<h1>🔥 PLAYER PRO FUNCIONANDO</h1>
 
 <input id="link" placeholder="Cole link do YouTube">
 <button onclick="tocar()">Tocar</button>
 
-<iframe id="player" src="" allowfullscreen></iframe>
+<iframe id="player"
+src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+allowfullscreen></iframe>
 
 <script>
 function getVideoId(url) {
-    let regExp = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/;
-    let match = url.match(regExp);
-    return match ? match[1] : null;
+    try {
+        let u = new URL(url);
+        if (u.hostname.includes("youtu.be")) {
+            return u.pathname.slice(1);
+        }
+        return u.searchParams.get("v");
+    } catch {
+        return null;
+    }
 }
 
 function tocar() {
@@ -76,7 +74,7 @@ function tocar() {
         document.getElementById("player").src =
         "https://www.youtube.com/embed/" + id;
     } else {
-        alert("Link inválido!");
+        alert("Cole um link válido do YouTube");
     }
 }
 </script>
