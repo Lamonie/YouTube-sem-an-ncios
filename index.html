@@ -1,15 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Monet Vídeos</title>
-
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f0f0f">
 
 <style>
 
@@ -17,8 +11,8 @@
 
 body{
 background:#0f0f0f;
-color:#fff;
 font-family:Arial;
+color:#fff;
 }
 
 /* HEADER */
@@ -66,6 +60,7 @@ padding:10px 15px;
 background:#222;
 border-radius:20px;
 white-space:nowrap;
+cursor:pointer;
 }
 
 .cat.active{
@@ -96,12 +91,14 @@ font-size:14px;
 margin-top:5px;
 }
 
-/* PLAYER */
-.player{
+/* MINI PLAYER */
+.mini{
 position:fixed;
 bottom:0;
 width:100%;
 background:#000;
+display:flex;
+flex-direction:column;
 }
 
 iframe{
@@ -110,8 +107,14 @@ height:200px;
 border:none;
 }
 
-</style>
+.controls{
+display:flex;
+justify-content:space-between;
+padding:10px;
+font-size:14px;
+}
 
+</style>
 </head>
 
 <body>
@@ -127,15 +130,22 @@ border:none;
 
 <div class="feed" id="feed"></div>
 
-<div class="player">
+<div class="mini">
 <iframe id="player"></iframe>
+<div class="controls">
+<span id="titulo">Nenhum vídeo</span>
+<span onclick="fechar()" style="cursor:pointer">✖</span>
+</div>
 </div>
 
 <script>
 
-/* API */
 const API_KEY="SUA_API_AQUI";
 
+let nextPage="";
+let queryAtual="música";
+
+/* CATEGORIAS */
 const categorias=["Música","Rap","Funk","Podcast","Notícias","Ao vivo"];
 
 const catDiv=document.getElementById("cats");
@@ -148,23 +158,31 @@ b.innerText=c;
 b.onclick=()=>{
 document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
 b.classList.add("active");
-buscar(c);
+queryAtual=c;
+buscar(true);
 };
 
 catDiv.appendChild(b);
 });
 
 /* BUSCAR */
-async function buscar(q){
-const query=q || document.getElementById("busca").value;
+async function buscar(novo=false){
 
-const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&maxResults=10&type=video&key=${API_KEY}`;
+if(novo){
+nextPage="";
+document.getElementById("feed").innerHTML="";
+}
+
+const query=document.getElementById("busca").value || queryAtual;
+
+const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&maxResults=10&type=video&pageToken=${nextPage}&key=${API_KEY}`;
 
 const res=await fetch(url);
 const data=await res.json();
 
+nextPage=data.nextPageToken || "";
+
 const feed=document.getElementById("feed");
-feed.innerHTML="";
 
 data.items.forEach(v=>{
 const id=v.id.videoId;
@@ -181,18 +199,43 @@ div.innerHTML=`
 
 div.onclick=()=>{
 document.getElementById("player").src=
-`https://www.youtube.com/embed/${id}?autoplay=1`;
+`https://www.youtube.com/embed/${id}?autoplay=1&playsinline=1`;
+
+document.getElementById("titulo").innerText=title;
+
+/* SALVAR HISTÓRICO */
+let hist=JSON.parse(localStorage.getItem("hist")||"[]");
+hist.unshift({title,id});
+localStorage.setItem("hist",JSON.stringify(hist.slice(0,20)));
 };
 
 feed.appendChild(div);
 });
+
 }
 
-buscar("música");
+/* SCROLL INFINITO */
+window.addEventListener("scroll",()=>{
+if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 200){
+buscar();
+}
+});
+
+/* FECHAR PLAYER */
+function fechar(){
+document.getElementById("player").src="";
+document.getElementById("titulo").innerText="Nenhum vídeo";
+}
+
+/* BUSCA AUTOMÁTICA */
+document.getElementById("busca").addEventListener("input",()=>{
+buscar(true);
+});
+
+/* INICIAL */
+buscar(true);
 
 </script>
 
 </body>
-</html>  
-
-{  "
+</html>
