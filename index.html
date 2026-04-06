@@ -1,17 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Monet Vídeos</title>
 
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f0f0f">
+
 <style>
+
 *{margin:0;padding:0;box-sizing:border-box}
 
 body{
 background:#0f0f0f;
-font-family:Arial;
 color:#fff;
+font-family:Arial;
 }
 
 /* HEADER */
@@ -42,7 +49,6 @@ width:45px;
 border:none;
 border-radius:50%;
 background:#fff;
-cursor:pointer;
 }
 
 /* CATEGORIAS */
@@ -60,7 +66,6 @@ padding:10px 15px;
 background:#222;
 border-radius:20px;
 white-space:nowrap;
-cursor:pointer;
 }
 
 .cat.active{
@@ -74,11 +79,12 @@ display:flex;
 flex-direction:column;
 gap:15px;
 padding:10px;
-padding-bottom:220px;
 }
 
 /* CARD */
-.card{cursor:pointer}
+.card{
+cursor:pointer;
+}
 
 .thumb{
 width:100%;
@@ -103,7 +109,9 @@ width:100%;
 height:200px;
 border:none;
 }
+
 </style>
+
 </head>
 
 <body>
@@ -116,23 +124,19 @@ border:none;
 </div>
 
 <div class="cats" id="cats"></div>
+
 <div class="feed" id="feed"></div>
 
 <div class="player">
-<iframe id="player" allow="autoplay"></iframe>
+<iframe id="player"></iframe>
 </div>
 
 <script>
 
-/* 🔑 COLOQUE SUA API AQUI */
+/* API */
 const API_KEY="SUA_API_AQUI";
 
-/* ESTADO */
-let nextPage="";
-let queryAtual="música";
-
-/* CATEGORIAS */
-const categorias=["Música","Rap","Funk","Pop","Rock","Trap","Lofi","Podcast","Ao vivo"];
+const categorias=["Música","Rap","Funk","Podcast","Notícias","Ao vivo"];
 
 const catDiv=document.getElementById("cats");
 
@@ -144,33 +148,23 @@ b.innerText=c;
 b.onclick=()=>{
 document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
 b.classList.add("active");
-queryAtual=c;
-buscar(true);
+buscar(c);
 };
 
 catDiv.appendChild(b);
 });
 
 /* BUSCAR */
-async function buscar(reset=false){
+async function buscar(q){
+const query=q || document.getElementById("busca").value;
 
-if(reset){
-nextPage="";
-document.getElementById("feed").innerHTML="";
-}
+const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${query}&maxResults=10&type=video&key=${API_KEY}`;
 
-const q=document.getElementById("busca").value || queryAtual;
-if(!q) return;
-
-const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q)}&maxResults=10&type=video&pageToken=${nextPage}&key=${API_KEY}`;
-
-try{
 const res=await fetch(url);
 const data=await res.json();
 
-nextPage=data.nextPageToken || "";
-
 const feed=document.getElementById("feed");
+feed.innerHTML="";
 
 data.items.forEach(v=>{
 const id=v.id.videoId;
@@ -187,38 +181,30 @@ div.innerHTML=`
 
 div.onclick=()=>{
 document.getElementById("player").src=
-`https://www.youtube.com/embed/${id}?autoplay=1&playsinline=1`;
+`https://www.youtube.com/embed/${id}?autoplay=1`;
 };
 
 feed.appendChild(div);
 });
-
-}catch(e){
-console.log("Erro:",e);
 }
 
-}
-
-/* SCROLL INFINITO */
-window.addEventListener("scroll",()=>{
-if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 200){
-buscar();
-}
-});
-
-/* BUSCA */
-function buscarClique(){
-buscar(true);
-}
-
-document.getElementById("busca").addEventListener("input",()=>{
-buscar(true);
-});
-
-/* INICIAL */
-buscar(true);
+buscar("música");
 
 </script>
 
 </body>
-</html>
+</html>  {
+  "name": "Monet Vídeos",
+  "short_name": "Monet",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#0f0f0f",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1384/1384060.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
